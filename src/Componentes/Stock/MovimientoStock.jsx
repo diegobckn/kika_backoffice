@@ -136,6 +136,7 @@ const MovimientoStock = ({ onClose }) => {
                   inputState={states.cantidad}
                   validationState={validatorStates.cantidad}
                   withLabel={true}
+                  isDecimal={true}
                   fieldName="cantidad"
                   label="Cantidad"
                   required={true}
