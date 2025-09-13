@@ -179,7 +179,7 @@ const PreciosGeneralesProducItem = ({
         margen: product.gananciaPorcentaje
       };
       console.log("para enviar",editedProduct)
-      Product.getInstance().update(editedProduct,(data,response)=>{
+      Product.getInstance().updatePrecios(editedProduct,(data,response)=>{
         onUpdatedOk(editedProduct,response)
       },(error)=>{
         onUpdatedWrong(error)

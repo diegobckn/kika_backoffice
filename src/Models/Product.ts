@@ -5,6 +5,7 @@ import axios from 'axios';
 import ModelConfig from './ModelConfig.ts';
 import System from '../Helpers/System.ts';
 import EndPoint from './EndPoint.ts';
+import dayjs from 'dayjs';
 
 
 class Product extends Model {
@@ -375,6 +376,44 @@ class Product extends Model {
             const configs = ModelConfig.get()
             var url = configs.urlBase +
                 "/ProductosTmp/UpdateProducto"
+
+            const response = await axios.put(url, data);
+            if (
+                response.data.statusCode == 200
+                || response.data.statusCode == 201
+
+            ) {
+                callbackOk(response.data, response);
+            } else {
+                callbackWrong("respuesta incorrecta del servidor")
+            }
+        } catch (error) {
+            console.log(error)
+            if (error.response && error.response.data && error.response.data.descripcion) {
+                callbackWrong(error.response.data.descripcion);
+            } else if (error.response && error.response.status === 500) {
+                callbackWrong(
+                    "Error interno del servidor. Por favor, inténtalo de nuevo más tarde."
+                );
+            } else if (error.message != "") {
+                callbackWrong(error.message)
+            } else {
+                callbackWrong(
+                    "Error al conectar con el servidor. Por favor, inténtalo de nuevo más tarde."
+                );
+            }
+        }
+    }
+
+    async updatePrecios(data, callbackOk, callbackWrong) {
+        try {
+            const configs = ModelConfig.get()
+            var url = configs.urlBase +
+                "/ProductosTmp/UpdateProductoPrecio"
+            data.codigoSucursal = 0;
+            data.puntoVenta = ""
+            data.codbarra = data.idProducto
+            data.fechaIngreso = System.getInstance().getDateForServer()
 
             const response = await axios.put(url, data);
             if (
