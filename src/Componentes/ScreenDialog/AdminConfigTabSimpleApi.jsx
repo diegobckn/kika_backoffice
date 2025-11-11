@@ -19,7 +19,8 @@ import InputFile from "../Elements/Compuestos/InputFile";
 
 const AdminConfigTabSimpleApi = ({
   tabNumber,
-  setSomeChange
+  setSomeChange,
+  closeModal= ()=>{}
 }) => {
 
   const {

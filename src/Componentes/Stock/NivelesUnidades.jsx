@@ -13,7 +13,6 @@ import dayjs from "dayjs";
 import User from "../../Models/User";
 import Stock from "../../Models/Stock";
 import SelectButtonList from "../Elements/Compuestos/SelectButtonList";
-import CONSTANTS from "../../definitions/Constants";
 import SearchProductsMenorNivelStock from "../Elements/Compuestos/SearchProductsMenorNivelStock";
 
 const NivelesUnidades = ({ onClose }) => {

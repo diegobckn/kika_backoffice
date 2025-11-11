@@ -24,7 +24,8 @@ const SelectList = ({
   label = fieldName[0].toUpperCase() + fieldName.substr(1),
   required = false,
   styles = {},
-  vars = null
+  vars = null,
+  placeholder = "Seleccionar"
 }) => {
 
   const {
@@ -36,7 +37,7 @@ const SelectList = ({
   const [validation, setValidation] = validationState ? validationState : vars ? vars[1][fieldName] : useState(null)
 
   const validate = () => {
-    // console.log("validate de:" + fieldName)
+    console.log("validate de:" + fieldName)
     // const len = selected.length
     // console.log("len:", len)
     // const reqOk = (!required || (required && len > 0))
@@ -55,7 +56,7 @@ const SelectList = ({
       "allOk": (reqOk),
       "message": message
     }
-    // console.log("vale:", vl)
+    console.log("vale:", vl)
     setValidation(vl)
   }
 
@@ -68,14 +69,29 @@ const SelectList = ({
   }
 
   useEffect(() => {
+    console.log("inputState es:", inputState)
+    if (!inputState) {
+      inputState = []
+      inputState.push(vars[0][fieldName])
+      inputState.push(vars[1][fieldName])
+    }
+    console.log("carga inicial para ", fieldName)
     validate()
     setSelected(-1)
   }, [])
 
   useEffect(() => {
     validate()
-    // console.log("selected es:", selected)
+    console.log("selected es:", selected)
   }, [selected])
+
+  //capturamos algun cambio de afuera
+  useEffect(() => {
+    console.log("cambio inputState[0]", inputState[0])
+    setSelected(inputState[0])
+  }, [inputState])
+
+
 
   return (
     <>
@@ -86,16 +102,17 @@ const SelectList = ({
       )}
 
 
-      <Select
+      <TextField
+        select
         sx={{
           ...{
-            marginTop: "17px"
+            marginTop: (withLabel ? "17px" : "")
           },
           ...styles
         }}
         fullWidth
         autoFocus={autoFocus}
-        required={required}
+        // required={required}
         label={label}
         value={selected !== "" ? selected : -1}
         onChange={checkChange}
@@ -104,7 +121,7 @@ const SelectList = ({
           key={-1}
           value={-1}
         >
-          SELECCIONAR
+          {placeholder}
         </MenuItem>
 
         {selectList.map((selectOption, ix) => (
@@ -115,7 +132,7 @@ const SelectList = ({
             {selectOption}
           </MenuItem>
         ))}
-      </Select>
+      </TextField>
     </>
   );
 };

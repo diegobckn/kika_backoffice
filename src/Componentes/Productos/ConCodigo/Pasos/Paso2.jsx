@@ -27,10 +27,10 @@ import {
 import ModelConfig from "../../../../Models/ModelConfig";
 import { AttachMoney, CheckBox, DraftsOutlined, Money, Percent } from "@mui/icons-material";
 import Product from "../../../../Models/Product";
-import CONSTANTS from "../../../../definitions/Constants";
 import System from "../../../../Helpers/System";
 import { SelectedOptionsContext } from "../../../Context/SelectedOptionsProvider";
 import Model from "../../../../Models/Model";
+import UNIDADES from "../../../../definitions/Unidades";
 
 
 const Step3CC = ({
@@ -441,7 +441,7 @@ const Step3CC = ({
                 onChange={(e) => handleUnidadSelect(e.target.value)}
                 label="Seleccionar Unidad"
               >
-                {CONSTANTS.UNIDADES.map((unidad) => (
+                {UNIDADES.map((unidad) => (
                   <MenuItem key={unidad.idUnidad} value={unidad.idUnidad}>
                     {unidad.descripcion}
                   </MenuItem>
@@ -463,7 +463,7 @@ const Step3CC = ({
                 onChange={(e) => handleUnidadVentaSelect(e.target.value)}
                 label="Seleccionar Unidad"
               >
-                {CONSTANTS.UNIDADES.map((unidad) => (
+                {UNIDADES.map((unidad) => (
                   <MenuItem key={unidad.idUnidad} value={unidad.idUnidad}>
                     {unidad.descripcion}
                   </MenuItem>

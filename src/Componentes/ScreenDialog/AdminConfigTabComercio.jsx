@@ -18,7 +18,8 @@ import SmallButton from "../Elements/SmallButton";
 
 const AdminConfigTabComercio = ({
   tabNumber,
-  setSomeChange
+  setSomeChange,
+  closeModal= ()=>{}
 }) => {
 
   const {

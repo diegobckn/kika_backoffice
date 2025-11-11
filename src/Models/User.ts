@@ -29,7 +29,7 @@ class User extends Model {
         return User.instance;
     }
 
-    static mostrarNombre(usuario){
+    static mostrarNombre(usuario) {
         return usuario.nombres + " " + usuario.apellidos
     }
 
@@ -179,6 +179,9 @@ class User extends Model {
         const configs = ModelConfig.get()
         var url = configs.urlBase
             + "/Usuarios/GetAllUsuarios"
+
+        url += "?idEmpresa=" + configs.idEmpresa
+
 
         EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.usuarios, response);

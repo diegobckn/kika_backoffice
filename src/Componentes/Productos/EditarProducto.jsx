@@ -24,17 +24,25 @@ import {
 import ModelConfig from "../../Models/ModelConfig";
 import Product from "../../Models/Product";
 import System from "../../Helpers/System";
+import PropertyImage from "../Elements/ExtendProperty/PropertyImage";
+import PropertyText from "../Elements/ExtendProperty/PropertyText";
+import PropertyCheck from "../Elements/ExtendProperty/PropertyCheck";
+import SmallButton from "../Elements/SmallButton";
+import { height, width } from "@mui/system";
+import SmallSecondaryButton from "../Elements/SmallSecondaryButton";
+import AsignaIngredientes from "../ScreenDialog/AsignaIngredientes";
+import AsignaAgregados from "../ScreenDialog/AsignaAgregados";
 
-const EditarProducto = ({ 
-  product, 
-  open, 
+const EditarProducto = ({
+  product,
+  open,
   handleClose,
   onEdit
 }) => {
   const apiUrl = ModelConfig.get().urlBase;
 
   const [editedProduct, setEditedProduct] = useState({});
-  
+
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
   const [families, setFamilies] = useState([]);
@@ -44,132 +52,135 @@ const EditarProducto = ({
   const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [esPesable, setEsPesable] = useState( false );
+  const [esPesable, setEsPesable] = useState(false);
+
+  const [verIngredientes, setVerIngredientes] = useState(false);
+  const [verAgregados, setVerAgregados] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState("");
 
-  const [changesNML,setchangesNML] = useState({
-    "idCategoria" : 0,
-    "idSubCategoria" : 0,
-    "idFamilia" : 0,
-    "idSubFamilia" : 0,
+  const [changesNML, setchangesNML] = useState({
+    "idCategoria": 0,
+    "idSubCategoria": 0,
+    "idFamilia": 0,
+    "idSubFamilia": 0,
   })
 
   //INICIADOR DE DATOS
-  
+
   useEffect(() => {
     setEditedProduct(product);
-    setEsPesable( product.tipoVenta == 2 )
+    setEsPesable(product.tipoVenta == 2)
   }, [open]);
-    
 
-  const checkChangeNML = ()=>{
+
+  const checkChangeNML = () => {
     // console.log("checkChangeNML")
     // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
     // console.log("editedProduct:", JSON.parse(JSON.stringify(editedProduct)))
-    if(changesNML.idCategoria != editedProduct.idCategoria){
+    if (changesNML.idCategoria != editedProduct.idCategoria) {
       return "idCategoria"
     }
 
-    if(changesNML.idSubCategoria != editedProduct.idSubCategoria){
+    if (changesNML.idSubCategoria != editedProduct.idSubCategoria) {
       return "idSubCategoria"
     }
 
-    if(changesNML.idFamilia != editedProduct.idFamilia){
+    if (changesNML.idFamilia != editedProduct.idFamilia) {
       return "idFamilia"
     }
 
-    if(changesNML.idSubFamilia != editedProduct.idSubFamilia){
+    if (changesNML.idSubFamilia != editedProduct.idSubFamilia) {
       return "idSubFamilia"
     }
     return ""
   }
 
-  
-  const cargarCategorias = ()=>{
+
+  const cargarCategorias = () => {
     // console.log("cargarCategorias")
-    Product.getInstance().getCategories((categorias)=>{
+    Product.getInstance().getCategories((categorias) => {
       setCategories(categorias);
       // console.log("las categorias son:",categorias);
-      if(editedProduct.idCategoria!=0){
+      if (editedProduct.idCategoria != 0) {
         changesNML.idCategoria = editedProduct.idCategoria
         // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
         // console.log("tiene idCategoria:" + editedProduct.idCategoria + "..cargamos subcategorias")
         cargarSubCategorias()
-      }else{
+      } else {
         setSubCategories([])
         setFamilies([])
         setSubFamilies([])
       }
-    }, (err)=>{ })
+    }, (err) => { })
 
   }
 
-  const cargarSubCategorias = ()=>{
+  const cargarSubCategorias = () => {
     // console.log("cargarSubCategorias")
-    if(editedProduct.idCategoria != 0){
-      Product.getInstance().getSubCategories(editedProduct.idCategoria,(subcategorias)=>{
+    if (editedProduct.idCategoria != 0) {
+      Product.getInstance().getSubCategories(editedProduct.idCategoria, (subcategorias) => {
         setSubCategories(subcategorias);
         // console.log("las subcategorias son:",subcategorias);
-        if(editedProduct.idSubCategoria!=0){
+        if (editedProduct.idSubCategoria != 0) {
           changesNML.idSubCategoria = editedProduct.idSubCategoria
           // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
           // console.log("tiene idSubCategoria:" + editedProduct.idSubCategoria + "..cargamos familias")
           cargarFamilias()
-        }else{
+        } else {
           setFamilies([])
           setSubFamilies([])
         }
-      },()=>{})
+      }, () => { })
     }
   }
 
-    const cargarFamilias = ()=>{
-      // console.log("cargarFamilias")
-      if (
-        editedProduct.idCategoria != 0
-        && editedProduct.idSubCategoria != 0
-      ) {
-        Product.getInstance().getFamiliaBySubCat({
-          categoryId:editedProduct.idCategoria,
-          subcategoryId:editedProduct.idSubCategoria,
-        },(familias)=>{
-          setFamilies(familias);
-          // console.log("las familias son:",familias);
-          if(editedProduct.idFamilia!=0){
-            changesNML.idFamilia = editedProduct.idFamilia
-            // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
-            // console.log("tiene idFamilia:" + editedProduct.idFamilia + "..cargamos subfamilias")
-            cargarSubFamilias()
-          }else{
-            setSubFamilies([])
-          }
-        },()=>{})
-      }
+  const cargarFamilias = () => {
+    // console.log("cargarFamilias")
+    if (
+      editedProduct.idCategoria != 0
+      && editedProduct.idSubCategoria != 0
+    ) {
+      Product.getInstance().getFamiliaBySubCat({
+        categoryId: editedProduct.idCategoria,
+        subcategoryId: editedProduct.idSubCategoria,
+      }, (familias) => {
+        setFamilies(familias);
+        // console.log("las familias son:",familias);
+        if (editedProduct.idFamilia != 0) {
+          changesNML.idFamilia = editedProduct.idFamilia
+          // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
+          // console.log("tiene idFamilia:" + editedProduct.idFamilia + "..cargamos subfamilias")
+          cargarSubFamilias()
+        } else {
+          setSubFamilies([])
+        }
+      }, () => { })
     }
+  }
 
-    const cargarSubFamilias = ()=>{
-      // console.log("cargarSubFamilias")
+  const cargarSubFamilias = () => {
+    // console.log("cargarSubFamilias")
 
-      if (
-        editedProduct.idCategoria != 0
-        && editedProduct.idSubCategoria != 0
-        && editedProduct.idFamilia != 0
-      ) {
-        Product.getInstance().getSubFamilia({
-          categoryId: editedProduct.idCategoria,
-          subcategoryId:editedProduct.idSubCategoria,
-          familyId:editedProduct.idFamilia
-        },(subfamilias)=>{
-          setSubFamilies(subfamilias);
-          // console.log("las subfamilias son:",subfamilias);
-          if(editedProduct.idSubFamilia!=0){
-            changesNML.idSubFamilia = editedProduct.idSubFamilia
-            // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
-            // console.log("tiene idSubFamilia:" + editedProduct.idSubFamilia)
-          }
-        },()=>{})
-      }
+    if (
+      editedProduct.idCategoria != 0
+      && editedProduct.idSubCategoria != 0
+      && editedProduct.idFamilia != 0
+    ) {
+      Product.getInstance().getSubFamilia({
+        categoryId: editedProduct.idCategoria,
+        subcategoryId: editedProduct.idSubCategoria,
+        familyId: editedProduct.idFamilia
+      }, (subfamilias) => {
+        setSubFamilies(subfamilias);
+        // console.log("las subfamilias son:",subfamilias);
+        if (editedProduct.idSubFamilia != 0) {
+          changesNML.idSubFamilia = editedProduct.idSubFamilia
+          // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
+          // console.log("tiene idSubFamilia:" + editedProduct.idSubFamilia)
+        }
+      }, () => { })
+    }
   }
 
   // setEditedProduct({
@@ -179,27 +190,27 @@ const EditarProducto = ({
   //   idSubFamilia:0,
   // })
 
-  const checkCambiosNML = ()=>{
+  const checkCambiosNML = () => {
     // console.log("Valores NML:", JSON.parse(JSON.stringify(changesNML)))
     const someChangesNML = checkChangeNML()
 
 
     // console.log("someChangesNML:",someChangesNML)
-    if(someChangesNML!= ""){
-      switch(someChangesNML){
+    if (someChangesNML != "") {
+      switch (someChangesNML) {
         case "idCategoria":
           cargarSubCategorias();
-        break;
+          break;
         case "idSubCategoria":
           cargarFamilias();
-        break;
+          break;
         case "idFamilia":
           cargarSubFamilias();
-        break;
+          break;
         default:
           console.log("no cambio nada")
           return
-        break
+          break
       }
 
       changesNML[someChangesNML] = editedProduct[someChangesNML]
@@ -208,15 +219,15 @@ const EditarProducto = ({
   }
 
   useEffect(() => {
-    if(Object.keys(editedProduct).length<1) return
+    if (Object.keys(editedProduct).length < 1) return
     console.log(editedProduct)
 
-    if(categories.length<1) {
+    if (categories.length < 1) {
       cargarCategorias()
-    }else{
+    } else {
       checkCambiosNML()
     }
-    
+
   }, [
     editedProduct,
     // categories.length,
@@ -225,7 +236,7 @@ const EditarProducto = ({
     // subfamilies.length,
   ]);
 
-  
+
 
   const closeSuccessDialog = () => {
     setOpenErrorDialog(false);
@@ -233,9 +244,9 @@ const EditarProducto = ({
 
   const handleSave = async (event) => {
 
-    
+
     event.preventDefault();
-    
+
     var nuevoObjetoActualizado = {
       ...editedProduct,
       tipoVenta: (esPesable ? 2 : 1)
@@ -243,26 +254,26 @@ const EditarProducto = ({
 
 
     nuevoObjetoActualizado.stockActual = parseInt(nuevoObjetoActualizado.stockActual)
-    
+
     delete nuevoObjetoActualizado.categoria
     delete nuevoObjetoActualizado.subCategoria
     delete nuevoObjetoActualizado.familia
     delete nuevoObjetoActualizado.subFamilia
-    
+
     console.log("para enviar:", nuevoObjetoActualizado)
-    Product.getInstance().update(nuevoObjetoActualizado,(res)=>{
+    Product.getInstance().update(nuevoObjetoActualizado, (res) => {
       // setSuccessDialogOpen(true);
       setSuccessMessage(res.message);
       handleClose();
-      if(onEdit) onEdit()
+      if (onEdit) onEdit()
       // window.location.reload(1)
-    },(err)=>{
+    }, (err) => {
       setErrorMessage(err.message);
       setOpenErrorDialog(true);
     })
   };
 
-  const checkEsPesable = (e)=>{
+  const checkEsPesable = (e) => {
     // console.log("e")
     // console.log(e)
     setEsPesable(!esPesable)
@@ -271,13 +282,16 @@ const EditarProducto = ({
 
   return (
     //fullScreen
-    <Dialog open={open} onClose={handleClose} fullWidth>
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth={"lg"}>
       <DialogTitle>Editar Producto</DialogTitle>
       <DialogContent>
         <Grid container spacing={3} sx={{
-          marginTop:"-10px"
+          marginTop: "-10px"
         }}>
-          <Grid item xs={8}>
+
+
+
+          <Grid item xs={12} sm={12} md={8} lg={8}>
             <TextField
               name="nombre"
               label="Nombre Producto"
@@ -292,14 +306,45 @@ const EditarProducto = ({
             />
           </Grid>
 
+          <Grid item xs={12} sm={12} md={9} lg={9}>
+
+            <PropertyImage topic={"producto"} unique={product.idProducto} />
+
+          </Grid>
+          <Grid item xs={12} sm={12} md={3} lg={3}>
+            <SmallButton
+              textButton={"Ingredientes"}
+              style={{ width: "100%", height: "45px" }}
+              actionButton={() => setVerIngredientes(true)}
+            />
+            <SmallSecondaryButton
+              textButton={"Agregados"}
+              style={{ width: "100%", height: "45px" }}
+              actionButton={() => setVerAgregados(true)}
+            />
+
+            <AsignaIngredientes
+              producto={product}
+              openDialog={verIngredientes}
+              setOpenDialog={setVerIngredientes} />
+
+            <AsignaAgregados
+              producto={product}
+              openDialog={verAgregados}
+              setOpenDialog={setVerAgregados} />
+
+          </Grid>
+
+
+
           <Grid item xs={6}>
             <InputLabel>Selecciona Categoría</InputLabel>
             <Select
               fullWidth
-              value={categories.length>0 ? editedProduct.idCategoria : 0}
-              
+              value={categories.length > 0 ? editedProduct.idCategoria : 0}
+
               onChange={(e) => {
-                console.log("antes de cambiar categoria el prod esta asi:", JSON.parse(JSON.stringify(editedProduct) ) )
+                console.log("antes de cambiar categoria el prod esta asi:", JSON.parse(JSON.stringify(editedProduct)))
                 setEditedProduct({
                   ...editedProduct,
                   // categoria: e.target.value,
@@ -315,12 +360,12 @@ const EditarProducto = ({
               label="Selecciona Categoría"
             >
               <MenuItem
-                  key={0}
-                  value={0}
-                >
-                  SELECCIONAR CATEGORIA
-                </MenuItem>
-              {categories.map((category,ix) => (
+                key={0}
+                value={0}
+              >
+                SELECCIONAR CATEGORIA
+              </MenuItem>
+              {categories.map((category, ix) => (
                 <MenuItem
                   key={ix}
                   value={category.idCategoria}
@@ -352,11 +397,11 @@ const EditarProducto = ({
               label="Selecciona Sub-Categoría"
             >
               <MenuItem
-                  key={0}
-                  value={0}
-                >
-                  SELECCIONAR SUBCATEGORIA
-                </MenuItem>
+                key={0}
+                value={0}
+              >
+                SELECCIONAR SUBCATEGORIA
+              </MenuItem>
               {subcategories.map((subcategory) => (
                 <MenuItem
                   key={subcategory.idSubcategoria}
@@ -372,7 +417,7 @@ const EditarProducto = ({
             <InputLabel>Selecciona Familia</InputLabel>
             <Select
               fullWidth
-              value={families.length>0 ? editedProduct.idFamilia : 0}
+              value={families.length > 0 ? editedProduct.idFamilia : 0}
               onChange={(e) => {
                 setEditedProduct({
                   ...editedProduct,
@@ -385,16 +430,16 @@ const EditarProducto = ({
               label="Selecciona Familia"
             >
               <MenuItem
-                  key={0}
-                  value={0}
-                >
-                  SELECCIONAR FAMILIA
-                </MenuItem>
+                key={0}
+                value={0}
+              >
+                SELECCIONAR FAMILIA
+              </MenuItem>
 
               {families.map((family) => (
-                <MenuItem 
-                key={family.idFamilia} 
-                value={family.idFamilia}>
+                <MenuItem
+                  key={family.idFamilia}
+                  value={family.idFamilia}>
                   {family.descripcion}
                 </MenuItem>
               ))}
@@ -405,9 +450,9 @@ const EditarProducto = ({
             <InputLabel>Selecciona Sub Familia</InputLabel>
             <Select
               fullWidth
-              value={subfamilies.length>0 ? editedProduct.idSubFamilia : 0}
+              value={subfamilies.length > 0 ? editedProduct.idSubFamilia : 0}
               onChange={(e) => {
-                console.log("antes de cambiar subfamilia el prod esta asi:", JSON.parse(JSON.stringify(editedProduct) ) )
+                console.log("antes de cambiar subfamilia el prod esta asi:", JSON.parse(JSON.stringify(editedProduct)))
                 setEditedProduct({
                   ...editedProduct,
                   // categoria: e.target.value,
@@ -417,12 +462,12 @@ const EditarProducto = ({
               label="Selecciona SubFamilia"
             >
 
-                <MenuItem
-                  key={0}
-                  value={0}
-                >
-                  SELECCIONAR SUBFAMILIA
-                </MenuItem>
+              <MenuItem
+                key={0}
+                value={0}
+              >
+                SELECCIONAR SUBFAMILIA
+              </MenuItem>
               {subfamilies.map((subfamily) => (
                 <MenuItem
                   key={subfamily.idSubFamilia}
@@ -459,29 +504,29 @@ const EditarProducto = ({
           <Grid item xs={12} sm={12} md={6} lg={6}>
             <Grid display="flex" alignItems="center">
               <label onClick={checkEsPesable}
-               style={{
-                marginTop: (System.isXsOrSm() ? "0": "41px"),
-                userSelect:"none"
-               }}>
+                style={{
+                  marginTop: (System.isXsOrSm() ? "0" : "41px"),
+                  userSelect: "none"
+                }}>
                 Es Pesable
-                </label>
+              </label>
               <input
                 type="checkbox"
                 checked={esPesable}
 
-                onChange={()=>{ } }
+                onChange={() => { }}
 
                 onClick={checkEsPesable}
                 style={{
-                  marginTop: (System.isXsOrSm() ? "0": "41px"),
-                  width:"50px",
-                  height:"20px"
+                  marginTop: (System.isXsOrSm() ? "0" : "41px"),
+                  width: "50px",
+                  height: "20px"
                 }}
-                />
-              </Grid>
+              />
             </Grid>
+          </Grid>
 
-            <Grid item xs={12} sm={12} md={12} lg={12}>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
             <InputLabel>Precio venta</InputLabel>
             <Grid item xs={12}>
               <TextField
@@ -531,65 +576,104 @@ const EditarProducto = ({
           </Grid> */}
 
           <Grid item xs={12}>
-          <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <TextField
-              name="stockInicial"
-              label="Stock Inicial"
-              type="number"
-              value={editedProduct.stockInicial || ""}
-              onChange={(e) => {
-                // setSelectedCategoryId(e.target.value);
-                // // setEditedProduct.categoria=e.target.value;
-                // setEditedProduct((prevProduct) => ({
-                //   ...prevProduct,
-                //   stockInicial: e.target.value,
-                // }));
-              }}
-              fullWidth
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  name="stockInicial"
+                  label="Stock Inicial"
+                  type="number"
+                  value={editedProduct.stockInicial || ""}
+                  onChange={(e) => {
+                    // setSelectedCategoryId(e.target.value);
+                    // // setEditedProduct.categoria=e.target.value;
+                    // setEditedProduct((prevProduct) => ({
+                    //   ...prevProduct,
+                    //   stockInicial: e.target.value,
+                    // }));
+                  }}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  name="stockActual"
+                  label="Stock actual"
+                  type="number"
+                  value={editedProduct.stockActual || ""}
+                  onChange={(e) => {
+                    // setSelectedCategoryId(e.target.value);
+                    // // setEditedProduct.categoria=e.target.value;
+                    setEditedProduct((prevProduct) => ({
+                      ...prevProduct,
+                      stockActual: e.target.value,
+                    }));
+                  }}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  name="stockCritico"
+                  label="Stock Critico"
+                  type="number"
+                  value={editedProduct.stockCritico || ""}
+                  onChange={(e) => {
+                    // setSelectedCategoryId(e.target.value);
+                    // // setEditedProduct.categoria=e.target.value;
+                    setEditedProduct((prevProduct) => ({
+                      ...prevProduct,
+                      stockCritico: e.target.value,
+                    }));
+                  }}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <PropertyText
+              name={"tiempo_preparacion"}
+              label={"Tiempo preparacion(en min)"}
+              topic={"producto"}
+              unique={product.idProducto}
             />
           </Grid>
 
-          <Grid item xs={4}>
-            <TextField
-              name="stockActual"
-              label="Stock actual"
-              type="number"
-              value={editedProduct.stockActual || ""}
-              onChange={(e) => {
-                // setSelectedCategoryId(e.target.value);
-                // // setEditedProduct.categoria=e.target.value;
-                setEditedProduct((prevProduct) => ({
-                  ...prevProduct,
-                  stockActual: e.target.value,
-                }));
-              }}
-              fullWidth
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <PropertyText
+              name={"tiempo_empaquetado"}
+              label={"Tiempo empaquetado(en min)"}
+              topic={"producto"}
+              unique={product.idProducto}
             />
           </Grid>
 
-          <Grid item xs={4}>
-            <TextField
-              name="stockCritico"
-              label="Stock Critico"
-              type="number"
-              value={editedProduct.stockCritico || ""}
-              onChange={(e) => {
-                // setSelectedCategoryId(e.target.value);
-                // // setEditedProduct.categoria=e.target.value;
-                setEditedProduct((prevProduct) => ({
-                  ...prevProduct,
-                  stockCritico: e.target.value,
-                }));
-              }}
-              fullWidth
+
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <PropertyCheck
+              name={"es_vendible"}
+              label={"Disponible para venta"}
+              topic={"producto"}
+              unique={product.idProducto}
             />
           </Grid>
-          </Grid>
+
+
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <PropertyCheck
+              name={"es_materia_prima"}
+              label={"Es materia prima"}
+              topic={"producto"}
+              unique={product.idProducto}
+            />
           </Grid>
 
 
-          
+
 
 
           <Grid item xs={12}>
@@ -601,19 +685,19 @@ const EditarProducto = ({
             </Button>
 
             <Typography sx={{
-              float:"right",
-              display:"inline-block",
+              float: "right",
+              display: "inline-block",
             }}
-            variant="p"
+              variant="p"
             >
               Precio vta $
               <Typography sx={{
-                fontSize:"23px",
-                position:"relative",
-                top:"2px"
-            }}
-            variant="span">
-              { (editedProduct.precioVenta ? editedProduct.precioVenta.toLocaleString() : "0") }
+                fontSize: "23px",
+                position: "relative",
+                top: "2px"
+              }}
+                variant="span">
+                {(editedProduct.precioVenta ? editedProduct.precioVenta.toLocaleString() : "0")}
               </Typography>
             </Typography>
           </Grid>

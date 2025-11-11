@@ -109,7 +109,7 @@ const MovimientoStock = ({ onClose }) => {
         <Grid item xs={12}>
           {/* SearchProducts ahora pasa el producto seleccionado */}
           {states.entradaSalida[0] && (
-            <SearchProducts onProductSelect={handleProductSelect} />
+            <SearchProducts focus={states.entradaSalida[0] != ""} onProductSelect={handleProductSelect} />
           )}
         </Grid>
         {/* Mostrar detalles del producto seleccionado */}

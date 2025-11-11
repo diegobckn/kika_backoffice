@@ -150,7 +150,7 @@ export default function ({
         states.comuna[1](dataInitial.comuna || "");
         states.rol[1](dataInitial.rol || "");
       }
-  
+
     }, []);
 
 
@@ -286,7 +286,7 @@ export default function ({
             "Semanal",
             "Mensual",
           ]}
-          label="remuneracion"
+          label="Remuneracion"
           fieldName="remuneracionTipo"
           vars={[states, validatorStates]}
           // required={true}

@@ -45,6 +45,7 @@ import System from "../../../Helpers/System";
 import PagoSimple from "./PagoSimple";
 import { SelectedOptionsContext } from "./../../../Componentes/Context/SelectedOptionsProvider";
 import Proveedor from "../../../Models/Proveedor";
+import ProveedorDocumento from "../../../Models/ProveedorDocumento";
 
 
 const PagoGeneral = ({
@@ -126,7 +127,7 @@ const PagoGeneral = ({
       "metodoPago": metodoPago
     }
     // console.log("Request Body antes de enviar:", requestBody);
-    Proveedor.AddProveedorCompraPagar(requestBody, (responseData, response) => {
+    ProveedorDocumento.AddProveedorCompraPagar(requestBody, (responseData, response) => {
       hideLoading()
       showMessage("Realizado correctamente")
       onFinishPago(requestBody, responseData)

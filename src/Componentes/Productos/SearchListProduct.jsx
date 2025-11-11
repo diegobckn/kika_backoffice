@@ -63,55 +63,52 @@ const SearchListProducts = ({
   const [productToDelete, setProductToDelete] = useState(null);
   const [hasResult, setHasResult] = useState(false);
 
-  const handleTabChange = (event, newValue) => {
-    // setSelectedTab(newValue);
-  };
-
   const setPageCount = (productCount) => {
     const totalPages = Math.ceil(productCount / ITEMS_PER_PAGE);
     if (!isNaN(totalPages)) {
       setTotalPages(totalPages);
+      console.log("setPageCount .. productCount", productCount)
     } else {
       console.error("Invalid product count:", productCount);
     }
   };
 
-   const listarProductos = async () => {
-     // console.log("vars:", System.getUrlVars())
-     var urlVars = System.getUrlVars()
-     if(urlVars.search != undefined){
-       console.log("cae aca")
-       doSearch(urlVars.search)
-       return
+  const listarProductos = async () => {
+    // console.log("vars:", System.getUrlVars())
+    var urlVars = System.getUrlVars()
+    if (urlVars.search != undefined) {
+      console.log("cae aca")
+      doSearch(urlVars.search)
+      return
+    }
+
+    console.log("Cargando productos...")
+    showLoading("Cargando productos...")
+
+    Product.getInstance().getAllPaginate({
+      pageNumber: currentPage
+    }, (prods, response) => {
+      if (Array.isArray(response.data.productos)) {
+        setProduct(response.data.productos);
+        setFilteredProducts(response.data.productos);
+        setPageCount(response.data.cantidadRegistros);
+        setPageProduct(response.data.productos);
+        setHasResult(response.data.productos.length > 0)
       }
-      
-      console.log("Cargando productos...")
-      showLoading("Cargando productos...")
+      hideLoading()
+    }, (error) => {
+      console.error("Error fetching product:", error);
+      setHasResult(false)
+      hideLoading()
+    })
+  };
 
-      Product.getInstance().getAllPaginate({
-        pageNumber:currentPage
-      },(prods,response)=>{
-        if (Array.isArray(response.data.productos)) {
-          setProduct(response.data.productos);
-          setFilteredProducts(response.data.productos);
-          setPageCount(response.data.cantidadRegistros);
-          setPageProduct(response.data.productos);
-          setHasResult(response.data.productos.length>0)
-        }
-        hideLoading()
-      },(error)=>{
-        console.error("Error fetching product:", error);
-        setHasResult(false)
-        hideLoading()
-      })
-    };
+  const doSearch = (replaceSearch = "") => {
+    if (searchTerm == "" && replaceSearch == "") return
 
-  const doSearch = (replaceSearch = "")=>{
-    if(searchTerm == "" && replaceSearch == "")return
 
-    
     var txtSearch = searchTerm
-    if(txtSearch == "") {
+    if (txtSearch == "") {
       txtSearch = replaceSearch
       setSearchTerm(replaceSearch)
     }
@@ -119,55 +116,63 @@ const SearchListProducts = ({
 
     console.log("hace busqueda")
     showLoading("haciendo busqueda por descripcion")
-    
-      
-    
-      Product.getInstance().findByDescriptionPaginado({
-        description: txtSearch,canPorPagina: 10,pagina:currentPage
-      }, (prods)=>{
-        // setFilteredProducts(prods);
-        // setProduct(prods);
-        // setFilteredProducts(prods);
-        // setPageCount(prods);
 
-        if(prods.length<1){
-          showLoading("haciendo busqueda por codigo")
-          Product.getInstance().findByCodigoBarras({
-            codigoProducto: txtSearch
-          }, (prods)=>{
-            // setFilteredProducts(prods);
-            // setProduct(prods);
-            // setFilteredProducts(prods);
-            // setPageCount(prods);
-            setPageProduct(prods);
-            
-            console.log("asigno productos")
-            console.log(prods)
-            hideLoading()
-            setHasResult(prods.length>0)
-          }, ()=>{
-            hideLoading()
-            setHasResult(false)
-          })
-        }else{
+
+
+    Product.getInstance().findByDescriptionPaginado({
+      description: txtSearch, canPorPagina: ITEMS_PER_PAGE, pagina: currentPage
+    }, (prods, response) => {
+      // setFilteredProducts(prods);
+      // setProduct(prods);
+      // setFilteredProducts(prods);
+      // setPageCount(prods);
+
+      if (prods.length < 1) {
+        showLoading("haciendo busqueda por codigo")
+        Product.getInstance().findByCodigoBarras({
+          codigoProducto: txtSearch
+        }, (prods) => {
+          // setFilteredProducts(prods);
+          // setProduct(prods);
+          // setFilteredProducts(prods);
+          // setPageCount(prods);
+          setPageCount(response.data.cantidadRegistros);
           setPageProduct(prods);
+
+          console.log("asigno productos")
+          console.log(prods)
           hideLoading()
-          setHasResult(prods.length>0)
-        }
-      }, ()=>{
+          setHasResult(prods.length > 0)
+        }, () => {
+          hideLoading()
+          setHasResult(false)
+        })
+      } else {
+
+        setProduct(prods);
+        setFilteredProducts(prods);
+
+
+        setPageProduct(prods);
         hideLoading()
-        setHasResult(false)
-      })
+        setPageCount(response.data.cantidadRegistros);
+
+        setHasResult(prods.length > 0)
+      }
+    }, () => {
+      hideLoading()
+      setHasResult(false)
+    })
   }
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const updateList = ()=>{
-    if(searchTerm.trim() == ""){
+  const updateList = () => {
+    if (searchTerm.trim() == "") {
       listarProductos()
-    }else{
+    } else {
       console.log("tiene algo para buscar")
       doSearch()
     }
@@ -176,20 +181,23 @@ const SearchListProducts = ({
   useEffect(() => {
     console.log("cambio pageProduct")
   }, [pageProduct,]);
-
   useEffect(() => {
-    console.log("cambio searchTerm")
-  }, [
-    searchTerm
-    ]);
-  
+    console.log("cambio totalPages", totalPages)
+  }, [totalPages,]);
+
+  // useEffect(() => {
+  //   console.log("cambio searchTerm")
+  // }, [
+  //   searchTerm
+  // ]);
 
 
-  useEffect(() => {
-    console.log("cambio hasResult")
-  }, [
-    hasResult
-    ]);
+
+  // useEffect(() => {
+  //   console.log("cambio hasResult")
+  // }, [
+  //   hasResult
+  // ]);
 
   useEffect(() => {
     updateList()
@@ -252,93 +260,89 @@ const SearchListProducts = ({
   };
 
 
-  const checkEnterSearch = (e)=>{
-    if(e.keyCode == 13){
+  const checkEnterSearch = (e) => {
+    if (e.keyCode == 13) {
       // console.log("apreto enter")
+      setCurrentPage(1)
       doSearch()
     }
   }
 
   return (
     <Box sx={{ p: 2, mb: 4 }}>
-      <div>
-        {/* <Tabs value={selectedTab} onChange={handleTabChange}> */}
-        <Tabs value={0}>
-          <Tab label="Productos sin codigos" />
-          {/* <Tab label="Productos con codigos" /> */}
-        </Tabs>
-        {/* <div style={{ p: 2, mt: 4 }} role="tabpanel" hidden={selectedTab !== 0}> */}
-        <div style={{ p: 2, mt: 4 }} role="tabpanel">
-          <TextField
-            sx={{
-              marginTop:"30px",
-              width:"250px",
-            }}
-            margin="dense"
-            label="Buscar productos..."
-            value={searchTerm}
-            onChange={(e)=>setSearchTerm(e.target.value)}
-            onKeyDown={(e)=>{
-              checkEnterSearch(e)
-            }}
-          />
-          <Button sx={{
-              marginTop:"30px",
-              marginLeft:"10px",
-              height:"55px !important",
-              width:"150px",
-              color:"white",
-              backgroundColor:"midnightblue",
-              "&:hover": {
-              backgroundColor: "#1c1b17 ",
-              color: "white",
-            },
-            }}
-            onClick={()=>{doSearch()}}
-            >Buscar</Button>
-          <Table>
-            <TableHead>
+      <div style={{ p: 2, mt: 4 }} role="tabpanel">
+        <TextField
+          sx={{
+            marginTop: "30px",
+            width: "250px",
+          }}
+          margin="dense"
+          label="Buscar productos..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => {
+            checkEnterSearch(e)
+          }}
+        />
+        <Button sx={{
+          marginTop: "30px",
+          marginLeft: "10px",
+          height: "55px !important",
+          width: "150px",
+          color: "white",
+          backgroundColor: "midnightblue",
+          "&:hover": {
+            backgroundColor: "#1c1b17 ",
+            color: "white",
+          },
+        }}
+          onClick={() => {
+            setCurrentPage(1)
+            doSearch()
+          }}
+        >Buscar</Button>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID Productos </TableCell>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Mercado Lógico</TableCell>
+              <TableCell>Precios </TableCell>
+              <TableCell>Stock</TableCell>
+              <TableCell>Impuestos</TableCell>
+              <TableCell>Bodega</TableCell>
+              <TableCell>Proveedor</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {!hasResult ? (
               <TableRow>
-                <TableCell>ID Productos </TableCell>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Mercado Lógico</TableCell>
-                <TableCell>Precios </TableCell>
-                <TableCell>Stock</TableCell>
-                <TableCell>Impuestos</TableCell>
-                <TableCell>Bodega</TableCell>
-                <TableCell>Proveedor</TableCell>
-                <TableCell>Acciones</TableCell>
+                <TableCell colSpan={2}>No se encontraron productos</TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {!hasResult ? (
-                <TableRow>
-                  <TableCell colSpan={2}>No se encontraron productos</TableCell>
-                </TableRow>
-              ) : (
-                pageProduct.map((product,index) => {
-                  // console.log("key:" + product.idProducto 
-                  //   + "////nombre: " + product.nombre
-                  //   + "////count: " + pageProduct.length
-                  // )
-                  return(
-                    <SearchListProductItem 
-                      product={product}
-                      key={index}
-                      index={index}
-                      onEditClick={(p) => handleEdit(p)}
-                      onDeleteClick={(p) => handleOpenDialog(p)}
-                    />
+            ) : (
+              pageProduct.map((product, index) => {
+                // console.log("key:" + product.idProducto 
+                //   + "////nombre: " + product.nombre
+                //   + "////count: " + pageProduct.length
+                // )
+                return (
+                  <SearchListProductItem
+                    product={product}
+                    key={index}
+                    index={index}
+                    onEditClick={(p) => handleEdit(p)}
+                    onDeleteClick={(p) => handleOpenDialog(p)}
+                  />
                 )
-                }
-                )
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              }
+              )
+            )}
+          </TableBody>
+        </Table>
       </div>
       <Pagination
-        count={currentPage + 1}
+        count={totalPages}
         page={currentPage}
         onChange={handlePageChange}
         showFirstButton
@@ -350,7 +354,7 @@ const SearchListProducts = ({
           product={selectedProduct}
           open={openEditModal}
           handleClose={handleCloseEditModal}
-          onEdit={()=>{
+          onEdit={() => {
             showMessage("Editado correctamente")
             setTimeout(() => {
               setRefresh(!refresh)
@@ -372,7 +376,7 @@ const SearchListProducts = ({
           </Button>
         </DialogActions>
       </Dialog>
-     
+
     </Box>
   );
 };

@@ -193,7 +193,7 @@ const FormularioProveedor = ({
                 inputState={states.giro}
                 fieldName="giro"
                 required={true}
-                maxLength={30}
+                // maxLength={30}
                 validationState={validatorStates.giro}
               />
             </Grid>

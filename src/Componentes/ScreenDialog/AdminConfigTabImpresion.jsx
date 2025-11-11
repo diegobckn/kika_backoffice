@@ -18,7 +18,8 @@ import SmallButton from "../Elements/SmallButton";
 
 const AdminConfigTabImpresion = ({
   tabNumber,
-  setSomeChange
+  setSomeChange,
+  closeModal= ()=>{}
 }) => {
 
   const {

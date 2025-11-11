@@ -48,6 +48,7 @@ import { chequeDefault } from "../../../definitions/Cheque";
 
 import { SelectedOptionsContext } from "./../../../Componentes/Context/SelectedOptionsProvider";
 import Proveedor from "../../../Models/Proveedor";
+import ProveedorDocumento from "../../../Models/ProveedorDocumento";
 
 const ItemTablaModalDetalle = ({
   detailOpen,
@@ -99,7 +100,7 @@ const ItemTablaModalDetalle = ({
     }
 
     // console.log("Request Body antes de enviar:", requestBody);
-    Proveedor.AddProveedorCompraPagar(requestBody, (responseData, response) => {
+    ProveedorDocumento.AddProveedorCompraPagar(requestBody, (responseData, response) => {
       hideLoading()
       showMessage("Realizado correctamente")
     }, (err) => {

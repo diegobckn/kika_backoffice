@@ -29,8 +29,8 @@ import { AttachMoney, Percent } from "@mui/icons-material";
 import Product from "../../../../Models/Product";
 import System from "../../../../Helpers/System";
 import { SelectedOptionsContext } from "../../../Context/SelectedOptionsProvider";
-import CONSTANTS from "../../../../definitions/Constants";
 import Model from "../../../../Models/Model";
+import UNIDADES from "../../../../definitions/Unidades";
 
 
 const Step3Component = ({
@@ -425,7 +425,7 @@ const Step3Component = ({
                 onChange={(e) => handleUnidadSelect(e.target.value)}
                 label="Selecciona Unidad"
               >
-                {CONSTANTS.UNIDADES.map((unidad) => (
+                {UNIDADES.map((unidad) => (
                   <MenuItem key={unidad.idUnidad} value={unidad.idUnidad}>
                     {unidad.descripcion}
                   </MenuItem>
@@ -447,7 +447,7 @@ const Step3Component = ({
                 onChange={(e) => handleUnidadVentaSelect(e.target.value)}
                 label="Seleccionar Unidad"
               >
-                {CONSTANTS.UNIDADES.map((unidad) => (
+                {UNIDADES.map((unidad) => (
                   <MenuItem key={unidad.idUnidad} value={unidad.idUnidad}>
                     {unidad.descripcion}
                   </MenuItem>

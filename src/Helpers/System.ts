@@ -96,8 +96,8 @@ class System {
         return (dayjs().format('YYYY-MM-DD HH:mm:ss') + ".000Z").replace(" ", "T")
     }
 
-    en2Decimales(valor) {
-        return Math.round(parseFloat(valor) * 100) / 100
+    en2Decimales(valor: number | string) {
+        return Math.round(parseFloat(valor + "") * 100) / 100
     }
 
     typeIntFloat(value) {
@@ -213,7 +213,7 @@ class System {
         }
     }
 
-    static formatDateServer(dateServer) {
+    static formatDateServer(dateServer: string, withHour = true) {
         const v1 = dateServer.split("T")
         const dt = v1[0]
         const hrs = v1[1]
@@ -221,7 +221,12 @@ class System {
         const [year, month, day] = dt.split("-")
         const [hr, mn] = hrs.split(":")
 
-        return day + "/" + month + "/" + year + " " + hr + ":" + mn
+        var result = day + "/" + month + "/" + year
+        if (withHour) {
+            result += " " + hr + ":" + mn
+        }
+
+        return result
     }
 
     static maxStr(str, max, completarConPuntos = true) {
@@ -332,6 +337,13 @@ class System {
         }
 
         return resu
+    }
+
+    static ucfirst(txt) {
+        if (!txt) {
+            return '';
+        }
+        return txt.charAt(0).toUpperCase() + txt.slice(1);
     }
 
 }

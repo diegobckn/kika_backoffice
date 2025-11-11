@@ -24,7 +24,8 @@ const InputFile = ({
   required = false,
   extensions = "png,jpg",
   fileInputLabel = "Elegir " + label,
-  vars = null
+  vars = null,
+  onDelete = () => { }
 }) => {
 
   const {
@@ -61,7 +62,7 @@ const InputFile = ({
       accept += traduceType(extension)
     })
 
-    console.log("prepareAcceptInput devuelve:", accept)
+    // console.log("prepareAcceptInput devuelve:", accept)
     setAccepts(accept)
   }
 
@@ -135,6 +136,13 @@ const InputFile = ({
   useEffect(() => {
     prepareAcceptInput()
   }, [])
+
+
+  useEffect(() => {
+    if (typeof (inputState[0]) == "string") {
+      setFileName(inputState[0])
+    }
+  }, [inputState[0]])
 
   return (
     <>
@@ -274,6 +282,7 @@ const InputFile = ({
                   showConfirm("Quitar?", () => {
                     setFileName("")
                     setFileValue(null)
+                    onDelete()
                   })
                 }}
               >
