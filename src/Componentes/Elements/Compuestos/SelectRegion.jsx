@@ -151,9 +151,10 @@ const SelectRegion = ({
       )}
 
 
-      <Select
+      <TextField
+        select
         sx={{
-          marginTop: "17px"
+          marginTop: (withLabel ? "17px" : "")
         }}
         fullWidth
         autoFocus={autoFocus}
@@ -177,7 +178,7 @@ const SelectRegion = ({
             {selectOption.regionNombre}
           </MenuItem>
         ))}
-      </Select>
+      </TextField>
     </>
   );
 };

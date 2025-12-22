@@ -6,13 +6,15 @@ import {
   InputLabel,
   Button,
   Typography,
-  Tooltip
+  Tooltip,
+  Grid
 } from "@mui/material";
 import { SelectedOptionsContext } from "../../Context/SelectedOptionsProvider";
 import ModelConfig from "../../../Models/ModelConfig";
 import { Backup, ChangeCircle, Check, Close, CloudDone, Dangerous, Task } from "@mui/icons-material";
 import User from "../../../Models/User";
 import Validator from "../../../Helpers/Validator";
+import System from "../../../Helpers/System";
 
 
 const InputFile = ({
@@ -25,6 +27,7 @@ const InputFile = ({
   extensions = "png,jpg",
   fileInputLabel = "Elegir " + label,
   vars = null,
+  canDelete = true,
   onDelete = () => { }
 }) => {
 
@@ -44,9 +47,11 @@ const InputFile = ({
           // oth = "image/png"
           oth = ".png"
           break;
-        case "jpg":
         case "jpeg":
           oth = "image/jpeg"
+          break;
+        case "jpg":
+          oth = "image/jpg"
           break;
         case "pdf":
           oth = "application/pdf"
@@ -155,7 +160,8 @@ const InputFile = ({
       <div style={{
         backgroundColor: "#f0f0f0",
         marginTop: "25px",
-        border: "1px solid #989898",
+        width: (System.isMobile() ? "100%" : ""),
+        // border: (System.isMobile() ? "" : "1px solid #989898"),
         height: "56px",
         display: "flex",
         flexDirection: "row",
@@ -221,11 +227,12 @@ const InputFile = ({
               <Tooltip title={fileName}>
                 <div style={{
                   display: "inline-block",
+                  width: (System.isMobile() ? "100%" : ""),
                   marginRight: "10px",
                   marginLeft: "4px",
                   padding: "10px",
                   cursor: "default",
-                  border: "1px solid #cbcbcb"
+                  // border: "1px solid #cbcbcb"
                   // backgroundColor:"red"
                 }}>
                   <Check sx={{
@@ -235,7 +242,9 @@ const InputFile = ({
                   }} />
 
 
+
                   <Typography sx={{
+                    width: (System.isMobile() ? "calc(100% - 34px)" : undefined),
                     display: "inline-block"
                   }}>{formatFileName()}</Typography>
 
@@ -245,6 +254,7 @@ const InputFile = ({
               <Button sx={{
                 border: "1px solid rgb(184 187 189)",
                 backgroundColor: "#e7fffd",
+                width: (System.isMobile() ? "100%" : undefined),
                 color: "#3d3c3c",
                 // marginTop:"25px",
                 "&:hover": {
@@ -266,34 +276,40 @@ const InputFile = ({
                 Cambiar
               </Button>
 
-              <Button sx={{
-                border: "1px solid rgb(184 187 189)",
-                backgroundColor: "#e7fffd",
-                marginLeft: "10px",
-                color: "#3d3c3c",
-                // marginTop:"25px",
-                "&:hover": {
-                  color: "#fff",
-                  backgroundColor: "#3d3c3c",
-                }
-              }}
+              {canDelete && (
 
-                onClick={() => {
-                  showConfirm("Quitar?", () => {
-                    setFileName("")
-                    setFileValue(null)
-                    onDelete()
-                  })
+
+
+                <Button sx={{
+                  border: "1px solid rgb(184 187 189)",
+                  backgroundColor: "#e7fffd",
+                  marginLeft: "10px",
+                  color: "#3d3c3c",
+                  // marginTop:"25px",
+                  "&:hover": {
+                    color: "#fff",
+                    backgroundColor: "#3d3c3c",
+                  }
                 }}
-              >
+
+                  onClick={() => {
+                    showConfirm("Quitar?", () => {
+                      setFileName("")
+                      setFileValue(null)
+                      onDelete()
+                    })
+                  }}
+                >
 
 
-                <Close sx={{
-                  color: "red",
+                  <Close sx={{
+                    color: "red",
 
-                }} />
-                Quitar
-              </Button>
+                  }} />
+                  Quitar
+                </Button>
+              )}
+
             </div>
           )}
 

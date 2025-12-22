@@ -22,7 +22,8 @@ const SmallButton = ({
   onMouseLeave = () => { },
   onTouchMove = () => { },
 
-  animateBackgroundColor = false
+  animateBackgroundColor = false,
+  fullWidth = false
 
 }) => {
   const [clickeable, setClickeable] = useState(true);
@@ -48,7 +49,7 @@ const SmallButton = ({
       disabled={disabled}
       sx={{
         ...{
-          width: "130px",
+          width: (fullWidth ? "100%" : "130px"),
           backgroundColor: (isDisabled ? "#ECEAEA" : colorFondo),
           color: "white",
           "&:hover": {
@@ -86,7 +87,7 @@ const SmallButton = ({
 
     >
       <Typography variant="h7">{textButton}</Typography>
-    </Button>
+    </Button >
   );
 };
 

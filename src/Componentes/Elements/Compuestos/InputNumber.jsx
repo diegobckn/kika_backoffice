@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { SelectedOptionsContext } from "../../Context/SelectedOptionsProvider";
 import Validator from "../../../Helpers/Validator";
+import System from "../../../Helpers/System";
 
 
 const InputNumber = ({
@@ -25,9 +26,10 @@ const InputNumber = ({
   endAdornment = null,
   isDecimal = false,
   isRut = false,
-  onClick = ()=>{},
+  onClick = () => { },
 
-  onRef = ()=>{}
+  onRef = () => { },
+  readonly = false
 }) => {
 
   const {
@@ -76,11 +78,16 @@ const InputNumber = ({
   }
 
   const checkKeyDown = (event) => {
-    console.log("checkKeyDown")
-    console.log("isDecimal", isDecimal)
-    console.log("Validator.isDecimal(" + event.key + ")", Validator.isDecimal(event.key))
-    console.log("Validator.isNumeric(" + event.key + ")", Validator.isNumeric(event.key))
-    if (!canAutoComplete && event.key == "Unidentified") {
+    if (System.isMobile()) {
+      setKeyPressed(true)
+      return
+    }
+    // console.log("checkKeyDown")
+    // console.log("isDecimal", isDecimal)
+    // console.log("Validator.isDecimal(" + event.key + ")", Validator.isDecimal(event.key))
+    // console.log("Validator.isNumeric(" + event.key + ")", Validator.isNumeric(event.key))
+
+    if (readonly || (!canAutoComplete && event.key == "Unidentified")) {
       event.preventDefault();
       return false
     } else {
@@ -100,18 +107,18 @@ const InputNumber = ({
       return false
     }
 
-    console.log("pasa bien")
+    // console.log("pasa bien")
   }
 
   const checkChange = (event) => {
     // console.log("checkChange")
-    
+
     // console.log("isDecimal", isDecimal)
     // console.log("Validator.isDecimal(" + event.target.value + ")", Validator.isDecimal(event.target.value))
     // console.log("Validator.isNumeric(" + event.target.value + ")", Validator.isNumeric(event.target.value))
-    
-    
-    if (!canAutoComplete && !keyPressed) {
+
+
+    if (readonly || (!canAutoComplete && !keyPressed)) {
       return
     }
     // console.log("checkChange2")
@@ -131,11 +138,11 @@ const InputNumber = ({
       setNumber(value);
     }
 
-    if(!isDecimal && isRut){
+    if (!isDecimal && isRut) {
       const numStr = number + ""
-      if(numStr.indexOf("-")>-1){
-        const numSinG = numStr.replace("-","")
-        if(Validator.isNumeric(numSinG)){
+      if (numStr.indexOf("-") > -1) {
+        const numSinG = numStr.replace("-", "")
+        if (Validator.isNumeric(numSinG)) {
           setNumber(value)
         }
       }
@@ -158,7 +165,7 @@ const InputNumber = ({
   }, [number])
 
   useEffect(() => {
-    if(refInput && refInput.current){
+    if (refInput && refInput.current) {
       onRef(refInput)
     }
   }, [refInput])
@@ -175,7 +182,7 @@ const InputNumber = ({
         autoFocus={autoFocus}
         margin="normal"
         required={required}
-        type="text"
+        type="number"
         label={label}
         value={number}
         onChange={checkChange}
@@ -184,7 +191,7 @@ const InputNumber = ({
 
         ref={refInput}
 
-        onClick={()=>{
+        onClick={() => {
           onClick()
         }}
 

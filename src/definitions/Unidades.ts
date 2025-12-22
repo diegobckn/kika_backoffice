@@ -1,6 +1,6 @@
 const UNIDADES = [
     { idUnidad: 0, descripcion: "Sin unidad" },
-    { idUnidad: 1, descripcion: "UNI" },
+    { idUnidad: 1, descripcion: "UNITARIO" },
     { idUnidad: 2, descripcion: "SACHET" },
     { idUnidad: 3, descripcion: "DISPLAY" },
     { idUnidad: 4, descripcion: "SIX PACK" },

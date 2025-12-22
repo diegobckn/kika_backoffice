@@ -58,7 +58,7 @@ const RankingVentas = () => {
       return;
     }
 
-    
+
 
     fetchData();
   };
@@ -132,18 +132,18 @@ const RankingVentas = () => {
 
   const grandTotalSuma = calculateTotalSuma();
 
-  useEffect(()=>{
+  useEffect(() => {
     setStartDate(dayjs())
     setEndDate(dayjs())
-    
-  },[])
+
+  }, [])
 
   return (
     <div style={{ display: "flex" }}>
       <SideBar />
       <Grid component="main" sx={{ flexGrow: 1, p: 2 }}>
         <Grid container spacing={1} alignItems="center">
-          Ranking de Ventas 
+          Ranking de Ventas
           <Grid container spacing={2} sx={{ mt: 2 }}>
             <Grid item xs={12} md={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -189,7 +189,7 @@ const RankingVentas = () => {
             </Grid>
           </Grid>
         </Grid>
-  
+
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {!loading && (
             <Grid item xs={12}>
@@ -197,7 +197,7 @@ const RankingVentas = () => {
                 <TableContainer>
                   <Table>
                     <TableHead>
-                     
+
                       <TableRow>
                         <TableCell colSpan={4}></TableCell>
                         <TableCell align="center">
@@ -212,7 +212,7 @@ const RankingVentas = () => {
               </Paper>
             </Grid>
           )}
-  
+
           {loading ? (
             <Grid item xs={12} style={{ textAlign: "center" }}>
               <CircularProgress />
@@ -224,90 +224,90 @@ const RankingVentas = () => {
                   <TableContainer>
                     <Table>
                       <TableHead>
-                       
+
                         <TableRow>
-  <TableCell align="center" sx={{ width: 120 }}>
-    <IconButton
-      size="small"
-      onClick={() => toggleRow(metodoPago)}
-    >
-      {openRows[metodoPago] ? (
-        <KeyboardArrowUp />
-      ) : (
-        <KeyboardArrowDown />
-      )}
-    </IconButton>
-  </TableCell>
-  <TableCell align="center" >
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell align="center" sx={{backgroundColor:"gainsboro"}}>Método de Pago</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell align="center"><strong>{metodoPago}</strong></TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </TableCell>
-  <TableCell align="center" >
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell align="center" sx={{backgroundColor:"gainsboro"}}>Total Cantidad</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell align="center">{data[metodoPago].totalCantidad}</TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </TableCell>
-  <TableCell align="center" >
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell align="center" sx={{backgroundColor:"gainsboro"}}>Valor</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell align="center">
-            {data[metodoPago].totalSuma.toLocaleString("es-CL")}
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </TableCell>
-  <TableCell align="center" >
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell align="center" sx={{backgroundColor:"gainsboro"}}>
-            <strong> % del total</strong>
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell align="center">
-            {Math.round(
-              calculatePercentage(
-                data[metodoPago].totalSuma,
-                grandTotalSuma
-              ) * 100
-            ) / 100}
-            %
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </TableCell>
-  <TableCell></TableCell>
-</TableRow>
+                          <TableCell align="center" sx={{ width: 120 }}>
+                            <IconButton
+                              size="small"
+                              onClick={() => toggleRow(metodoPago)}
+                            >
+                              {openRows[metodoPago] ? (
+                                <KeyboardArrowUp />
+                              ) : (
+                                <KeyboardArrowDown />
+                              )}
+                            </IconButton>
+                          </TableCell>
+                          <TableCell align="center" >
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell align="center" sx={{ backgroundColor: "gainsboro" }}>Método de Pago</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell align="center"><strong>{metodoPago}</strong></TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                          <TableCell align="center" >
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell align="center" sx={{ backgroundColor: "gainsboro" }}>Total Cantidad</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell align="center">{data[metodoPago].totalCantidad}</TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                          <TableCell align="center" >
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell align="center" sx={{ backgroundColor: "gainsboro" }}>Valor</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell align="center">
+                                    {data[metodoPago].totalSuma.toLocaleString("es-CL")}
+                                  </TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                          <TableCell align="center" >
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell align="center" sx={{ backgroundColor: "gainsboro" }}>
+                                    <strong> % del total</strong>
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell align="center">
+                                    {Math.round(
+                                      calculatePercentage(
+                                        data[metodoPago].totalSuma,
+                                        grandTotalSuma
+                                      ) * 100
+                                    ) / 100}
+                                    %
+                                  </TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
 
                       </TableHead>
                       <TableBody>
@@ -340,7 +340,7 @@ const RankingVentas = () => {
                                         Porcentaje Participación
                                       </TableCell>
                                       <TableCell align="center">
-                                       Acciones
+                                        Acciones
                                       </TableCell>
                                     </TableRow>
                                   </TableHead>
@@ -356,8 +356,8 @@ const RankingVentas = () => {
                                               {row.tipoComprobante}
                                             </TableCell>
                                             <TableCell align="center">
-                                        Folio
-                                      </TableCell>
+                                              Folio
+                                            </TableCell>
                                             <TableCell align="center">
                                               {row.cantidad}
                                             </TableCell>
@@ -369,17 +369,17 @@ const RankingVentas = () => {
                                             <TableCell align="center">
                                               {Math.round(
                                                 (row.sumaTotal / grandTotalSuma) *
-                                                  10000
+                                                10000
                                               ) / 100}
                                               %
                                             </TableCell>
                                             <TableCell align="center">
-                                            <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => handleOpenDialog(row)}
-                                            >Ver Detalles</Button>
-                                            
+                                              <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                onClick={() => handleOpenDialog(row)}
+                                              >Ver Detalles</Button>
+
                                             </TableCell>
                                           </TableRow>
                                         )
@@ -398,7 +398,7 @@ const RankingVentas = () => {
             ))
           )}
         </Grid>
-  
+
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
@@ -415,7 +415,7 @@ const RankingVentas = () => {
             </IconButton>
           }
         />
-         <Dialog
+        <Dialog
           open={dialogOpen}
           onClose={handleCloseDialog}
           maxWidth="md"
@@ -455,7 +455,7 @@ const RankingVentas = () => {
       </Grid>
     </div>
   );
-  
+
 };
 
 export default RankingVentas;

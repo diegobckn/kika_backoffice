@@ -141,6 +141,10 @@ const InputCodigoBarras = ({
     setLargo(number.length)
   }, [number])
 
+  useEffect(() => {
+    setNumber(inputState[0])
+  }, [inputState[0]])
+
   return (
     <>
       {withLabel && (

@@ -4,7 +4,7 @@ class StorageSesion {
     nombreBasicoParaAlmacenado = "";
     //BASICOS
 
-    constructor(dataName) {
+    constructor(dataName: string) {
         this.nombreBasicoParaAlmacenado = "backoffice" + dataName
     }
 
@@ -25,35 +25,33 @@ class StorageSesion {
     //CON ESTRUCTURA
 
     //unico obligatorio es id
-    getNombre(objeto): string {
+    getNombre(objeto: any): string {
         if (objeto.id == undefined) {
             objeto.id = 1;
         }
         return this.nombreBasicoParaAlmacenado + objeto.id;
     }
 
-    agregar(objeto) {
+    agregar(objeto: any) {
         var objetoGuardar = JSON.stringify(objeto);
         this.guardarX(this.getNombre(objeto), objetoGuardar);
     }
 
-    guardar(objeto) {
+    guardar(objeto: any) {
         var objetoGuardar = JSON.stringify(objeto);
         this.guardarX(this.getNombre(objeto), objetoGuardar);
     }
 
-    editar(objeto) {
+    editar(objeto: any) {
         var objetoGuardar = JSON.stringify(objeto);
         this.guardarX(this.getNombre(objeto), objetoGuardar);
     }
 
-
-    eliminar(objeto) {
+    eliminar(objeto: any) {
         this.eliminarX(this.getNombre(objeto));
     }
 
-
-    cargar(objeto) {
+    cargar(objeto: any) {
         if (!this.hasOne()) return null
         if (typeof (objeto) == "number") objeto = { id: objeto };
         try {
@@ -68,6 +66,14 @@ class StorageSesion {
         for (var i in localStorage) {
             console.log('Log storage:' + i + ' = ' + localStorage[i]);
         }
+    }
+
+    getAll() {
+        var all: any = {}
+        for (var i in localStorage) {
+            all[i] = localStorage[i]
+        }
+        return all
     }
 
     eliminarTodoStorage() {
@@ -124,7 +130,7 @@ class StorageSesion {
     truncate() {
         // verTodosStorages();
         var indice;
-        var datos = [];
+        var datos: any = [];
         for (var i in localStorage) {
             if (i.indexOf(this.nombreBasicoParaAlmacenado) > -1) {
                 indice = i.replace(this.nombreBasicoParaAlmacenado, "");
@@ -133,8 +139,6 @@ class StorageSesion {
         }
         return datos;
     }
-
-
 
     calcularEspacios() {
         var limiteStorage = 5240370;
@@ -151,7 +155,7 @@ class StorageSesion {
                 if (i.indexOf(nombreEnStorage) > -1) { indice = i.replace(nombreEnStorage, ""); }
                 mayorId = indice;
             }
-            total = parseInt(total) + parseInt(actual);
+            total += parseInt(actual);
         }
 
         resul = {

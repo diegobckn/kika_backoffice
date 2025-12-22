@@ -25,7 +25,9 @@ const InputRutCliente = ({
   fieldName = "rut",
   required = false,
   isEdit = false,
-  vars = null
+  vars = null,
+  onExist = (rut) => { }
+
 }) => {
 
   const {
@@ -42,6 +44,10 @@ const InputRutCliente = ({
   const [allOk, setAllOk] = useState(null);
 
   const checkKeyDown = (event) => {
+    if (System.isMobile()) {
+      setKeyPressed(true)
+      return
+    }
     if (!canAutoComplete && event.key == "Unidentified") {
       event.preventDefault();
       return false
@@ -141,6 +147,8 @@ const InputRutCliente = ({
           (isEdit && res.clienteSucursal.length > 1)
         ) {
           showMessage("Ya existe el rut ingresado")
+          onExist(rut)
+
           setRutUnique(false)
         } else {
           // if (!isEdit) showMessage("Rut disponible")
@@ -170,6 +178,8 @@ const InputRutCliente = ({
         autoFocus={autoFocus}
         value={rut}
         type="text"
+        // text porque debe permitir la letra k
+
         required={required}
         onChange={validateRut}
         onBlur={checkUnique}

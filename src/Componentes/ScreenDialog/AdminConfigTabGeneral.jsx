@@ -17,6 +17,7 @@ import SmallButton from "../Elements/SmallButton";
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import BoxOptionList from "../Elements/BoxOptionList";
 import CriterioCosto from "../../definitions/CriterioCosto";
+import AdminStorage from "./AdminStorage";
 
 
 const AdminConfigTabGeneral = ({
@@ -28,7 +29,8 @@ const AdminConfigTabGeneral = ({
   const {
     showMessage,
     showLoading,
-    hideLoading
+    hideLoading,
+    pedirSupervision
   } = useContext(SelectedOptionsContext);
 
   const TAB_INDEX = 0
@@ -40,6 +42,7 @@ const AdminConfigTabGeneral = ({
 
   const [criterioCostoComercio, setCriterioCostoComercio] = useState(null)
   const [idEmpresa, setIdEmpresa] = useState(0)
+  const [showAdminMem, setShowAdminMem] = useState(false)
 
 
   const loadConfigSesion = () => {
@@ -142,6 +145,16 @@ const AdminConfigTabGeneral = ({
           height: "50px",
         }}></div>
 
+        <SmallButton textButton="Admin memoria" actionButton={() => {
+          pedirSupervision("administrar memoria", () => {
+            setShowAdminMem(true)
+          }, {})
+        }} />
+
+        <AdminStorage
+          openDialog={showAdminMem}
+          setOpenDialog={setShowAdminMem}
+        />
 
         <SmallButton textButton="Guardar" actionButton={confirmSave} />
         <SmallButton textButton="Guardar y salir" actionButton={() => confirmSave(true)} />

@@ -21,6 +21,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import axios from "axios";
+import ModelConfig from "../../Models/ModelConfig";
 
 const BoxBuscador = ({ onClosePreciosClientes }) => {
   const [searchText, setSearchText] = useState("");

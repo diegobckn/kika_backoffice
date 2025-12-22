@@ -33,7 +33,7 @@ export default class ReporteVenta extends Model {
     fechadesde: string,
     fechahasta: string,
     tipoComprobante: string
-  }, callbackOk, callbackWrong) {
+  }, callbackOk:any, callbackWrong:any) {
     try {
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -52,7 +52,7 @@ export default class ReporteVenta extends Model {
       } else {
         callbackWrong("Respuesta desconocida del servidor")
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error)
       if (error.response) {
         callbackWrong(
@@ -77,17 +77,17 @@ export default class ReporteVenta extends Model {
   async searchPreventasInServer(data: {
     fechadesde: string,
     fechahasta: string,
-  }, callbackOk, callbackWrong) {
+  }, callbackOk:any, callbackWrong:any) {
 
     const configs = ModelConfig.get()
-      var url = configs.urlBase
-        + "/ReporteVentas/ReportePreventa?"
-        + "fechadesde=" + data.fechadesde
-        + "&fechahasta=" + data.fechahasta
+    var url = configs.urlBase
+      + "/ReporteVentas/ReportePreventa?"
+      + "fechadesde=" + data.fechadesde
+      + "&fechahasta=" + data.fechahasta
 
-      EndPoint.sendGet(url, (responseData, response) => {
-        callbackOk(responseData, response);
-      }, callbackWrong)
+    EndPoint.sendGet(url, (responseData:any, response:any) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 
   static async searchCostoMargen(data: {
@@ -99,27 +99,65 @@ export default class ReporteVenta extends Model {
     subcategoria: number,
     familia: number,
     subfamilia: number,
-    
+
     pageNumber: number,
     rowPage: number,
-  }, callbackOk, callbackWrong) {
+  }, callbackOk:any, callbackWrong:any) {
 
     const configs = ModelConfig.get()
-      var url = configs.urlBase
-        + "/ReporteVentas/ReporteVentaCostoMargen?"
-        + "fechadesde=" + data.fechadesde
-        + "&fechahasta=" + data.fechahasta
-        
-        + "&categoria=" + data.categoria
-        + "&subcategoria=" + data.subcategoria
-        + "&familia=" + data.familia
-        + "&subfamilia=" + data.subfamilia
-        
-        + "&pageNumber=" + data.pageNumber
-        + "&rowPage=" + data.rowPage
+    var url = configs.urlBase
+      + "/ReporteVentas/ReporteVentaCostoMargen?"
+      + "fechadesde=" + data.fechadesde
+      + "&fechahasta=" + data.fechahasta
 
-      EndPoint.sendGet(url, (responseData, response) => {
-        callbackOk(responseData, response);
-      }, callbackWrong)
+      + "&categoria=" + data.categoria
+      + "&subcategoria=" + data.subcategoria
+      + "&familia=" + data.familia
+      + "&subfamilia=" + data.subfamilia
+
+      + "&pageNumber=" + data.pageNumber
+      + "&rowPage=" + data.rowPage
+
+    EndPoint.sendGet(url, (responseData:any, response:any) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
+
+
+  static async getFlujos(data: {
+    fechadesde: string,
+    fechahasta: string,
+  }, callbackOk: (rsData: any, rs: any) => {}, callbackWrong: any) {
+
+    const configs = ModelConfig.get()
+    var url = configs.urlBase
+      + "/ReporteVentas/ReporteCajaFlujoByFecha?"
+      + "fechadesde=" + data.fechadesde
+      + "&fechahasta=" + data.fechahasta
+
+    EndPoint.sendGet(url, (responseData: any, response: any) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
+  }
+
+  static async getMovStock(data: {
+    fechadesde: string,
+    fechahasta: string,
+    pageNumber: number,
+    rowPage: number
+  }, callbackOk: (rsData: any, rs: any) => {}, callbackWrong: any) {
+
+    const configs = ModelConfig.get()
+    var url = configs.urlBase
+      + "/StockMovimientos/StockTarjetaExistencia?"
+      + "fechadesde=" + data.fechadesde
+      + "&fechahasta=" + data.fechahasta
+      + "&pageNumber=" + (data.pageNumber ? data.pageNumber : 1)
+      + "&rowPage=" + (data.rowPage ? data.rowPage : 10)
+
+    EndPoint.sendGet(url, (responseData: any, response: any) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
+  }
+
 };

@@ -47,26 +47,26 @@ const ListadoCajas = () => {
   const [cajaSelect, setCajaSelect] = useState(null)
   const [showEdit, setShowEdit] = useState(false)
 
-  
-  const cargarListado = ()=>{
+
+  const cargarListado = () => {
     showLoading("Cargando el listado")
-    Sucursal.getAll((sucursalesx)=>{
+    Sucursal.getAll((sucursalesx) => {
       setSucursales(sucursalesx)
       procesarCajas(sucursalesx)
       hideLoading()
-    },(err)=>{
+    }, (err) => {
       hideLoading()
       showMessage(err)
     })
   }
 
-  const procesarCajas = (sucursales)=>{
+  const procesarCajas = (sucursales) => {
     var cajasx = []
-    sucursales.forEach((sucursal,ix)=>{
+    sucursales.forEach((sucursal, ix) => {
       console.log(sucursal)
-      if(sucursal.puntoVenta && sucursal.puntoVenta.length>0){
-        sucursal.puntoVenta.forEach((puntoVentaItem,ix2)=>{
-          if(puntoVentaItem && puntoVentaItem.idSucursalPvTipo === TiposPasarela.CAJA){
+      if (sucursal.puntoVenta && sucursal.puntoVenta.length > 0) {
+        sucursal.puntoVenta.forEach((puntoVentaItem, ix2) => {
+          if (puntoVentaItem && puntoVentaItem.idSucursalPvTipo === TiposPasarela.CAJA) {
             puntoVentaItem.sucursal = sucursal.descripcionSucursal
             cajasx.push(puntoVentaItem)
           }
@@ -76,58 +76,58 @@ const ListadoCajas = () => {
     setCajas(cajasx)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     cargarListado()
-  },[])
+  }, [])
 
   return (
     <Box sx={{ p: 2, mb: 4 }}>
-          {cajas.length === 0 ? (
-            <Typography>
-              No hay informacion para mostrar
-            </Typography>
-          ) : (
+      {cajas.length === 0 ? (
+        <Typography>
+          No hay informacion para mostrar
+        </Typography>
+      ) : (
 
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell colSpan={10}>Cajas</TableCell>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell colSpan={10}>Cajas</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Nombre de la caja</TableCell>
+              <TableCell>Sucursal</TableCell>
+              <TableCell>Configuraciones</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cajas.map((caja, key) => (
+              <TableRow key={key}>
+                <TableCell>{caja.idCaja}</TableCell>
+                <TableCell>{caja.sPuntoVenta}</TableCell>
+                <TableCell>{caja.sucursal}</TableCell>
+                <TableCell>{caja.puntoVentaConfiguracions ? caja.puntoVentaConfiguracions.length : 0}</TableCell>
+                <TableCell>
+                  <IconButton onClick={() => {
+                    setCajaSelect(caja)
+                    setShowEdit(true)
+                  }}>
+                    <EditIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Nombre de la caja</TableCell>
-                <TableCell>Sucursal</TableCell>
-                <TableCell>Configuraciones</TableCell>
-                <TableCell>Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {cajas.map((caja,key) => (
-                <TableRow key={key}>
-                  <TableCell>{caja.idCaja}</TableCell>
-                  <TableCell>{caja.sPuntoVenta}</TableCell>
-                  <TableCell>{caja.sucursal}</TableCell>
-                  <TableCell>{caja.puntoVentaConfiguracions.length}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => {
-                      setCajaSelect(caja)
-                      setShowEdit(true)
-                    }}>
-                      <EditIcon />
-                    </IconButton>
-                    </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          )}
+            ))}
+          </TableBody>
+        </Table>
+      )}
 
       <EditarCajaSucursal
         openDialog={showEdit}
         setOpendialog={setShowEdit}
-        onClose={()=>{setShowEdit(false)}}
+        onClose={() => { setShowEdit(false) }}
         data={cajaSelect}
-        onUpdate={()=>{
+        onUpdate={() => {
           cargarListado()
           setShowEdit(false)
         }}

@@ -41,6 +41,10 @@ const InputRut = ({
   const [allOk, setAllOk] = useState(null);
 
   const checkKeyDown = (event) => {
+    if (System.isMobile()) {
+      setKeyPressed(true)
+      return
+    }
     if (!canAutoComplete && event.key == "Unidentified") {
       event.preventDefault();
       return false
@@ -169,6 +173,8 @@ const InputRut = ({
         autoFocus={autoFocus}
         value={rut}
         type="text"
+        // text porque debe permitir la letra k
+
         required={required}
         onChange={validateRut}
         onBlur={checkUnique}

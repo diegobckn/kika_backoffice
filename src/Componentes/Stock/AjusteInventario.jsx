@@ -12,16 +12,20 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import User from "../../Models/User";
 import Stock from "../../Models/Stock";
+import InputName from "../Elements/Compuestos/InputName";
+import InputGeneric from "../Elements/Compuestos/InputGeneric";
 
 const AjusteInventario = ({ onClose }) => {
   const { showLoading, hideLoading, showMessage } = useContext(SelectedOptionsContext);
 
   var states = {
     stockFisico: useState(""),
+    glosa: useState(""),
   }
 
   var validatorStates = {
     stockFisico: useState(null),
+    glosa: useState(null),
   }
 
   const [selectedProduct, setSelectedProduct] = useState(null); // Para almacenar el producto seleccionado
@@ -34,17 +38,17 @@ const AjusteInventario = ({ onClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (states.stockFisico[0] === selectedProduct.stockActual) {
-      showMessage("Debe ingresar un valor distinto al del sistema")
-      return
-    }
+    // if (states.stockFisico[0] === selectedProduct.stockActual) {
+    //   showMessage("Debe ingresar un valor distinto al del sistema")
+    //   return
+    // }
     // Validar antes de enviar
     if (!System.allValidationOk(validatorStates, showMessage)) {
       return false
     }
 
     const data = {
-      "observacion": "AJUSTE INVENTARIO",
+      "observacion": "AJUSTE INVENTARIO. " + states.glosa[0],
       "idUsuario": User.getInstance().getFromSesion().codigoUsuario,
       "fechaIngreso": System.getInstance().getDateForServer(),
       "stockMovimientos": [
@@ -87,44 +91,60 @@ const AjusteInventario = ({ onClose }) => {
         </Grid>
         {/* Mostrar detalles del producto seleccionado */}
         {selectedProduct && (
-          <Grid item xs={12} sm={12} md={6} lg={6} >
-            <Box sx={{
-              border: '1px solid #ddd',
-              padding: 2,
-              borderRadius: 2,
-            }}>
-              <Typography variant="h6"> Producto Seleccionado:</Typography>
-              <Typography>Nombre: {selectedProduct.nombre}</Typography>
+          <>
+            <Grid item xs={12} sm={12} md={12} lg={12} >
+              <Box sx={{
+                border: '1px solid #ddd',
+                padding: 2,
+                borderRadius: 2,
+              }}>
+                <Typography variant="h6"> Producto Seleccionado:</Typography>
+                <Typography>Nombre: {selectedProduct.nombre}</Typography>
 
-              <Typography>Stock en sistema: {selectedProduct.stockActual}</Typography>
-            </Box>
-          </Grid>
+                <Typography>Stock en sistema: {selectedProduct.stockActual}</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} >
+              {/* Reemplazamos el TextField con el InputNumber para Stock Físico */}
+              <InputNumber
+                inputState={states.stockFisico}
+                validationState={validatorStates.stockFisico}
+                withLabel={true}
+                isDecimal={true}
+                fieldName="stockFisico"
+                label="Stock Físico"
+                required={true}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} >
+              {/* Reemplazamos el TextField con el InputNumber para Stock Físico */}
+              <InputGeneric
+                inputState={states.glosa}
+                validationState={validatorStates.glosa}
+                withLabel={true}
+                isDecimal={true}
+                fieldName="glosa"
+                label="Glosa"
+                required={true}
+                maxLength={150}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <SendingButton
+                textButton=" Aplicar Ajuste"
+                actionButton={handleSubmit}
+                sending={false}
+                sendingText="Registrando..."
+                style={{
+                  width: "50%",
+                  margin: "0 25%",
+                  backgroundColor: "#950198"
+                }}
+              />
+            </Grid>
+          </>
         )}
-        <Grid item xs={12} sm={12} md={6} lg={6} >
-          {/* Reemplazamos el TextField con el InputNumber para Stock Físico */}
-          <InputNumber
-            inputState={states.stockFisico}
-            validationState={validatorStates.stockFisico}
-            withLabel={true}
-            isDecimal={true}
-            fieldName="stockFisico"
-            label="Stock Físico"
-            required={true}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <SendingButton
-            textButton=" Aplicar Ajuste"
-            actionButton={handleSubmit}
-            sending={false}
-            sendingText="Registrando..."
-            style={{
-              width: "50%",
-              margin: "0 25%",
-              backgroundColor: "#950198"
-            }}
-          />
-        </Grid>
+
       </Grid>
     </Paper>
   );

@@ -10,6 +10,7 @@ import ModelConfig from "../../../Models/ModelConfig";
 import { Check, Dangerous } from "@mui/icons-material";
 import User from "../../../Models/User";
 import Validator from "../../../Helpers/Validator";
+import System from "../../../Helpers/System";
 
 
 const InputEmail = ({
@@ -77,6 +78,10 @@ const InputEmail = ({
   }
 
   const checkKeyDown = (event) => {
+    if (System.isMobile()) {
+      setKeyPressed(true)
+      return
+    }
     if (!canAutoComplete && event.key == "Unidentified") {
       event.preventDefault();
       return false

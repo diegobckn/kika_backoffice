@@ -4,7 +4,7 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 
 import {
@@ -24,14 +24,17 @@ import {
 import ModelConfig from "../../Models/ModelConfig";
 import Product from "../../Models/Product";
 import System from "../../Helpers/System";
-import PropertyImage from "../Elements/ExtendProperty/PropertyImage";
+import InputImage from "../Elements/Compuestos/InputImage";
 import PropertyText from "../Elements/ExtendProperty/PropertyText";
-import PropertyCheck from "../Elements/ExtendProperty/PropertyCheck";
+import PropertyCheckbox from "../Elements/ExtendProperty/PropertyCheckbox";
 import SmallButton from "../Elements/SmallButton";
 import { height, width } from "@mui/system";
 import SmallSecondaryButton from "../Elements/SmallSecondaryButton";
 import AsignaIngredientes from "../ScreenDialog/AsignaIngredientes";
 import AsignaAgregados from "../ScreenDialog/AsignaAgregados";
+import MovimientoStock from "../Stock/MovimientoStock";
+import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
+import InputImageResize from "../Elements/Compuestos/InputImageResize";
 
 const EditarProducto = ({
   product,
@@ -39,7 +42,13 @@ const EditarProducto = ({
   handleClose,
   onEdit
 }) => {
-  const apiUrl = ModelConfig.get().urlBase;
+
+  const {
+    showLoading,
+    hideLoading,
+    showAlert,
+    showMessage
+  } = useContext(SelectedOptionsContext);
 
   const [editedProduct, setEditedProduct] = useState({});
 
@@ -58,6 +67,8 @@ const EditarProducto = ({
   const [verAgregados, setVerAgregados] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [showMovStock, setShowMovStock] = useState(false);
 
   const [changesNML, setchangesNML] = useState({
     "idCategoria": 0,
@@ -220,8 +231,7 @@ const EditarProducto = ({
 
   useEffect(() => {
     if (Object.keys(editedProduct).length < 1) return
-    console.log(editedProduct)
-
+    // console.log(editedProduct)
     if (categories.length < 1) {
       cargarCategorias()
     } else {
@@ -253,21 +263,29 @@ const EditarProducto = ({
     };
 
 
-    nuevoObjetoActualizado.stockActual = parseInt(nuevoObjetoActualizado.stockActual)
+    nuevoObjetoActualizado.stockCritico = parseFloat(nuevoObjetoActualizado.stockCritico)
+    nuevoObjetoActualizado.stockActual = 0
+    nuevoObjetoActualizado.stockInicial = 0
 
     delete nuevoObjetoActualizado.categoria
     delete nuevoObjetoActualizado.subCategoria
     delete nuevoObjetoActualizado.familia
     delete nuevoObjetoActualizado.subFamilia
 
+
+    showLoading("Guardando")
     console.log("para enviar:", nuevoObjetoActualizado)
     Product.getInstance().update(nuevoObjetoActualizado, (res) => {
       // setSuccessDialogOpen(true);
+      hideLoading()
       setSuccessMessage(res.message);
-      handleClose();
+      setTimeout(() => {
+        handleClose();
+      }, 300);
       if (onEdit) onEdit()
       // window.location.reload(1)
     }, (err) => {
+      hideLoading()
       setErrorMessage(err.message);
       setOpenErrorDialog(true);
     })
@@ -307,8 +325,8 @@ const EditarProducto = ({
           </Grid>
 
           <Grid item xs={12} sm={12} md={9} lg={9}>
-
-            <PropertyImage topic={"producto"} unique={product.idProducto} />
+            {/* <InputImage topic={"producto"} unique={product.idProducto} product={product} /> */}
+            <InputImageResize topic={"producto"} unique={product.idProducto} product={product} />
 
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
@@ -547,73 +565,21 @@ const EditarProducto = ({
 
           </Grid>
 
-
-          {/* <Grid item xs={6}>
-            <InputLabel>Ingresa Proveedor</InputLabel>
-            <Select
-              fullWidth
-              value={selectedProveedorId}
-              onChange={(e) => {
-                setEditedProduct((prevProduct) => ({
-                  ...prevProduct,
-                  proveedor: e.target.value,
-                }));
-              }}
-              label="Selecciona Proveedor"
-            >
-              <MenuItem value={editedProduct.id || ""}>
-                {editedProduct.proveedor}
-              </MenuItem>
-              {proveedores.map((proveedor) => (
-                <MenuItem
-                  key={proveedor.id}
-                  value={proveedor.nombreResponsable}
-                >
-                  {proveedor.nombreResponsable}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid> */}
-
           <Grid item xs={12}>
+
             <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <TextField
-                  name="stockInicial"
-                  label="Stock Inicial"
-                  type="number"
-                  value={editedProduct.stockInicial || ""}
-                  onChange={(e) => {
-                    // setSelectedCategoryId(e.target.value);
-                    // // setEditedProduct.categoria=e.target.value;
-                    // setEditedProduct((prevProduct) => ({
-                    //   ...prevProduct,
-                    //   stockInicial: e.target.value,
-                    // }));
-                  }}
-                  fullWidth
-                />
+              <Grid item xs={6} sm={6} md={6} lg={6} >
+
+                <Typography>
+                  Stock actual
+                </Typography>
+                <Typography>
+                  {editedProduct.stockActual}
+                </Typography>
+
               </Grid>
 
-              <Grid item xs={4}>
-                <TextField
-                  name="stockActual"
-                  label="Stock actual"
-                  type="number"
-                  value={editedProduct.stockActual || ""}
-                  onChange={(e) => {
-                    // setSelectedCategoryId(e.target.value);
-                    // // setEditedProduct.categoria=e.target.value;
-                    setEditedProduct((prevProduct) => ({
-                      ...prevProduct,
-                      stockActual: e.target.value,
-                    }));
-                  }}
-                  fullWidth
-                />
-              </Grid>
-
-              <Grid item xs={4}>
+              <Grid item xs={6} sm={6} md={6} lg={6} >
                 <TextField
                   name="stockCritico"
                   label="Stock Critico"
@@ -630,6 +596,13 @@ const EditarProducto = ({
                   fullWidth
                 />
               </Grid>
+
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <SmallButton textButton={"Ajustar stock"} actionButton={() => {
+                  setShowMovStock(true)
+                }} />
+              </Grid>
+
             </Grid>
           </Grid>
 
@@ -654,7 +627,7 @@ const EditarProducto = ({
 
 
           <Grid item xs={12} sm={12} md={6} lg={6}>
-            <PropertyCheck
+            <PropertyCheckbox
               name={"es_vendible"}
               label={"Disponible para venta"}
               topic={"producto"}
@@ -664,7 +637,7 @@ const EditarProducto = ({
 
 
           <Grid item xs={12} sm={12} md={6} lg={6}>
-            <PropertyCheck
+            <PropertyCheckbox
               name={"es_materia_prima"}
               label={"Es materia prima"}
               topic={"producto"}
@@ -676,14 +649,7 @@ const EditarProducto = ({
 
 
 
-          <Grid item xs={12}>
-            <Button variant="contained" color="primary" onClick={handleSave}>
-              Guardar
-            </Button>
-            <Button variant="contained" onClick={handleClose}>
-              Cerrar
-            </Button>
-
+          <Grid item xs={12} sm={12} md={12} lg={12}>
             <Typography sx={{
               float: "right",
               display: "inline-block",
@@ -701,7 +667,63 @@ const EditarProducto = ({
               </Typography>
             </Typography>
           </Grid>
+
+          <Grid item xs={12} sm={4} md={3} lg={3}>
+            <Button
+              sx={{
+                width: "100%",
+                height: "50px"
+              }}
+              variant="contained"
+              color="primary"
+              onClick={handleSave}>
+              Guardar
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={4} md={3} lg={2}>
+            <Button
+              sx={{
+                width: "100%",
+                height: "50px",
+                backgroundColor: "#858585ff"
+              }}
+              variant="contained"
+              onClick={handleClose}>
+              Cerrar
+            </Button>
+          </Grid>
         </Grid>
+
+
+
+
+        <Dialog
+          open={showMovStock}
+          onClose={() => { setShowMovStock(false) }}
+          maxWidth="lg"
+          fullWidth
+        >
+          <MovimientoStock
+            onClose={() => {
+              setShowMovStock(false)
+            }}
+            onUpdate={() => {
+              setShowMovStock(false)
+              Product.getInstance().findByCodigoBarras({
+                codigoProducto: editedProduct.idProducto
+              }, (respData) => {
+                console.log("respData", respData)
+                if (respData.length > 0) {
+                  setEditedProduct(respData[0])
+                }
+              }, (er) => {
+                showMessage("No se pudo actualizar la informacion")
+              })
+            }}
+            product={editedProduct} />
+        </Dialog>
+
+
       </DialogContent>
 
       <Dialog open={successDialogOpen} onClose={closeSuccessDialog}>
@@ -727,6 +749,7 @@ const EditarProducto = ({
         </DialogActions>
       </Dialog>
     </Dialog>
+
   );
 };
 

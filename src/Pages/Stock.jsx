@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Dialog, Box } from "@mui/material";
 import SideBar from "../Componentes/NavBar/SideBar.jsx";
 import AjusteInventario from "../Componentes/Stock/AjusteInventario.jsx";
@@ -7,8 +7,20 @@ import StockModel from "../Models/Stock";
 import QrStockMobile from "../Componentes/ScreenDialog/QrStockMobile.jsx";
 import NivelesUnidades from "../Componentes/Stock/NivelesUnidades.jsx";
 import { Typography } from "@mui/joy";
+import { SelectedOptionsContext } from "../Componentes/Context/SelectedOptionsProvider";
+
 
 const Stock = () => {
+
+  const {
+    userData,
+    showMessage,
+    showConfirm,
+    pedirSupervision,
+    showLoading,
+    hideLoading
+  } = useContext(SelectedOptionsContext);
+
   // Estado para controlar la apertura/cierre del modal de Ajuste de Inventario
   const [openAjusteInventario, setOpenAjusteInventario] = useState(false);
   const [verMovStock, setVerMovStock] = useState(false);
@@ -19,7 +31,10 @@ const Stock = () => {
 
   // Función para abrir el modal
   const handleOpenAjusteInventario = () => {
-    setOpenAjusteInventario(true);
+    pedirSupervision("Ajuste stock", () => {
+      setOpenAjusteInventario(true);
+    }, {})
+
   };
 
   // Función para cerrar el modal
@@ -70,7 +85,7 @@ const Stock = () => {
           }}
           onClick={() => { setVerMovStock(true) }} // Abre el modal al hacer clic en el botón
         >
-          Entrada/Salida
+          Entrada / Salida
         </Button>
 
         <Button

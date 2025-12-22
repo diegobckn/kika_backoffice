@@ -38,6 +38,9 @@ import User from "../Models/User";
 import { saveAs } from "file-saver";
 import * as xlsx from "xlsx/xlsx.mjs";
 import SmallButton from "../Componentes/Elements/SmallButton";
+import InputName from "../Componentes/Elements/Compuestos/InputName";
+import SmallSuccessButton from "../Componentes/Elements/SmallSuccessButton";
+import SmallDangerButton from "../Componentes/Elements/SmallDangerButton";
 
 const RankingLibroVentas = () => {
 
@@ -79,8 +82,7 @@ const RankingLibroVentas = () => {
   const [userSel, setUserSel] = useState(null);
   const [ventasPorCaja, setVentaPorCaja] = useState([]);
 
-
-
+  const [nroFolio, setNroFolio] = useState("");
 
   const exportExcel = () => {
 
@@ -151,6 +153,10 @@ const RankingLibroVentas = () => {
   useEffect(() => {
     // exportExcel()
   }, [])
+
+  const filtrar = () => {
+    cargarVentasPorUsuarioYCaja()
+  }
 
   const fetchData = async () => {
     setLoading(true);
@@ -331,6 +337,7 @@ const RankingLibroVentas = () => {
 
 
   const cargarVentasPorUsuarioYCaja = () => {
+    console.log("cargarVentasPorUsuarioYCaja")
     var ventas = []
     var cantCaja = 0
     var totCaja = 0
@@ -344,7 +351,10 @@ const RankingLibroVentas = () => {
         const infoUser = getUserInfo(venta.idUsuario)
         const userName = infoUser ? infoUser.nombres + " " + infoUser.apellidos : ""
 
-        if (userSel === null || users[userSel] == "Todos" || userName == users[userSel]) {
+        if (
+          (userSel === null || users[userSel] == "Todos" || userName == users[userSel])
+          && (nroFolio === "" || parseInt(nroFolio) == venta.nroComprobante)
+        ) {
           const nroComprobante = venta.nroComprobante
           if (!ventasIds.includes(venta.nroComprobante)) {
             ventasIds.push(venta.nroComprobante)
@@ -557,6 +567,32 @@ const RankingLibroVentas = () => {
                   setUserSel(sel)
                 }}
               />
+            </Grid>
+
+            <Grid container spacing={1} alignItems="center">
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <br />
+                <Typography>Filtrar</Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={6} lg={6}>
+                <InputName
+                  inputState={[nroFolio, setNroFolio]}
+                  label={"nro folio"}
+                  onEnter={filtrar}
+                  withLabel={false}
+                />
+
+              </Grid>
+              <Grid item xs={12} sm={12} md={6} lg={6}>
+                <SmallSuccessButton
+                  textButton={"Filtrar"}
+                  actionButton={filtrar}
+                  style={{
+                    marginTop: "12px",
+                    height: "50px"
+                  }}
+                />
+              </Grid>
             </Grid>
 
 

@@ -9,12 +9,15 @@ import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import ModelConfig from "../../Models/ModelConfig";
 
 
-const SmallGrayButton = ({textButton, actionButton}) => {
+const SmallGrayButton = ({
+  textButton,
+  actionButton = () => { }
+}) => {
   const [disabled, setDisabled] = useState(false);
 
   return (
-        <Button
-        sx={{
+    <Button
+      sx={{
         width: "130px",
         backgroundColor: "#8a8d94",
         color: "white",
@@ -23,20 +26,20 @@ const SmallGrayButton = ({textButton, actionButton}) => {
           color: "white",
         },
         margin: "5px",
-        }}
-        onClick={()=>{
-          if(disabled) {
-            return
-          }
-          actionButton()
-          setDisabled(true);
-          setTimeout(function(){
-            setDisabled(false);
-          },ModelConfig.getInstance().getFirst().buttonDelayClick);
-        }}
-        >
-          <Typography variant="h7">{textButton}</Typography>
-        </Button>
+      }}
+      onClick={() => {
+        if (disabled) {
+          return
+        }
+        actionButton()
+        setDisabled(true);
+        setTimeout(function () {
+          setDisabled(false);
+        }, ModelConfig.getInstance().getFirst().buttonDelayClick);
+      }}
+    >
+      <Typography variant="h7">{textButton}</Typography>
+    </Button>
   );
 };
 

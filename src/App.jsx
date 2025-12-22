@@ -30,6 +30,7 @@ import '../node_modules/@fontsource/roboto/400.css';
 import '../node_modules/@fontsource/roboto/500.css';
 import '../node_modules/@fontsource/roboto/700.css';
 import ReportesClientes from './Pages/ReportesClientes';
+import ReportesUsuarios from './Pages/ReportesUsuarios';
 import ReportesCtaCorriente from './Pages/ReportesCtaCorriente';
 import ReportesCtaCorrienteProv from './Pages/ReportesCtaCorrienteProv';
 import ReporteProductosStockCritico from './Pages/ReporteProductosStockCritico';
@@ -37,11 +38,13 @@ import ReporteCostoGanancia from './Pages/ReporteCostoGanancia';
 import RankingVentas from './Pages/RankingVentas';
 import RankingProductos from './Pages/RankingProductos';
 import RankingLibroVentas from './Pages/RankingLibroVentas';
+import RankingLibroVentasProducto from './Pages/RankingLibroVentasProducto';
 import RankingLibroCompras from './Pages/RankingLibroCompras';
 import ReporteMaestroProductos from './Pages/ReporteMaestroProductos';
 import Stock from './Pages/Stock/';
 import EntradaSalidaStock from './Pages/EntradaSalidaStock';
 import Preventas from './Pages/Preventas';
+import ReporteFlujo from './Pages/ReporteFlujo';
 
 import { SelectedOptionsProvider } from "./Componentes/Context/SelectedOptionsProvider";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -55,6 +58,8 @@ import Preventa from './Pages/PreventaSucursal';
 import ReporteZ from './Pages/ReporteZ';
 import ReporteCierreZ from './Pages/ReporteCierreZ';
 import ReporteStockValorizado from './Pages/ReporteStockValorizado';
+import CrearClienteQr from './Pages/CrearClienteQr';
+import ReporteMovStock from './Pages/ReporteMovStock';
 
 function App() {
   return (
@@ -81,7 +86,9 @@ function App() {
             <Route path="/precios" element={<Precios />} />
             <Route path="/proveedores" element={<Proveedores />} />
             <Route path="/clientes" element={<Clientes />} />
+            <Route path="/clientes/crear-por-qr" element={<CrearClienteQr />} />
             <Route path="/clientes/reportes" element={<ReportesClientes />} />
+            <Route path="/usuarios/reportes" element={<ReportesUsuarios />} />
             <Route path="/productos" element={<Productos />} />
             <Route path="/productos/categorias" element={<Categorias />} />
             <Route path="/productos/subcategorias" element={<SubCategorias />} />
@@ -93,8 +100,11 @@ function App() {
             <Route path="reportes/cuentacorrienteclientes" element={<ReportesCtaCorriente />} />
             <Route path="reportes/cuentacorrienteproveedores" element={<ReportesCtaCorrienteProv />} />
             <Route path="reportes/rankingventas" element={<RankingVentas />} />
+            <Route path="reportes/flujo" element={<ReporteFlujo />} />
+            <Route path="reportes/movstock" element={<ReporteMovStock />} />
             <Route path="reportes/rankingproductos" element={<RankingProductos />} />
             <Route path="reportes/rankinglibroventas" element={<RankingLibroVentas />} />
+            <Route path="reportes/rankinglibroventasproducto" element={<RankingLibroVentasProducto />} />
             <Route path="reportes/stockcriticos" element={<ReporteProductosStockCritico />} />
             <Route path="reportes/costosganancias" element={<ReporteCostoGanancia />} />
             <Route path="reportes/rankinglibrocompras" element={<RankingLibroCompras />} />

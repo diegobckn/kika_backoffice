@@ -187,8 +187,15 @@ const RankingProductos = () => {
 
   const filtrar = () => {
     var dataFiltrada = []
+    const busca = filtrarTexto.toLowerCase()
     dataResult.forEach((itemResult) => {
-      if (itemResult.descripcion.toLowerCase().indexOf(filtrarTexto) > -1) {
+      const desc = itemResult.descripcion.toLowerCase()
+
+      if (
+        desc.indexOf(busca) > -1
+        || itemResult.codigoProducto.toLowerCase().indexOf(busca) > -1
+        || busca.indexOf(desc) > -1
+      ) {
         dataFiltrada.push(itemResult)
       }
     })

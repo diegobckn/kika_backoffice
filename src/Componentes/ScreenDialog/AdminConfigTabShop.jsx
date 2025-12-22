@@ -22,6 +22,13 @@ import Shop from "../../Models/Shop";
 import InputFile from "../Elements/Compuestos/InputFile";
 import System from "../../Helpers/System";
 import { width } from "@mui/system";
+import InputName from "../Elements/Compuestos/InputName";
+import InputPage from "../Elements/Compuestos/InputPage";
+import InputNumber from "../Elements/Compuestos/InputNumber";
+import InputGeneric from "../Elements/Compuestos/InputGeneric";
+import SmallSecondaryButton from "../Elements/SmallSecondaryButton";
+import ShopDeliveryZones from "./ShopDeliveryZones";
+import ShopDeliveryTimes from "./ShopDeliveryTimes";
 
 
 const AdminConfigTabShop = ({
@@ -48,6 +55,30 @@ const AdminConfigTabShop = ({
   const [checkingConnectMp, setCheckingConnectMp] = useState(false)
 
   const [cambioAlgo, setCambioAlgo] = useState(false)
+  const [showZones, setShowZones] = useState(false)
+  const [showTimes, setShowTimes] = useState(false)
+
+  const inputs = {
+    name: useState(""),
+    full_adress: useState(""),
+    description: useState(""),
+    unique_doc: useState(""),
+    gps_position: useState(""),
+    time_start: useState(""),
+    time_end: useState(""),
+    url: useState("")
+  }
+
+  const validations = {
+    name: useState(""),
+    full_adress: useState(""),
+    description: useState(""),
+    unique_doc: useState(""),
+    gps_position: useState(""),
+    time_start: useState(""),
+    time_end: useState(""),
+    url: useState("")
+  }
 
   const achicarInfo = (infoCompleta) => {
     const infoMin = {}
@@ -80,40 +111,87 @@ const AdminConfigTabShop = ({
     }
   }
 
+  const setInputValues = (values) => {
+    // console.log("setInputValues", values)
+    const names = Object.keys(values)
+    const namesInputs = Object.keys(inputs)
+    names.forEach((name) => {
+      // console.log("name", name)
+      if (namesInputs.indexOf(name) > -1) {
+        // console.log("es correcto, asigno..", values[name])
+        inputs[name][1](values[name])
+      }
+    })
+  }
+
+  const getInputValues = () => {
+    // console.log("getInputValues", infoComercio)
+    const names = Object.keys(infoComercio)
+    const namesInputs = Object.keys(inputs)
+
+    var result = []
+
+    names.forEach((name) => {
+      // console.log("name", name)
+      if (namesInputs.indexOf(name) > -1) {
+        // console.log("es correcto, asigno..", inputs[name][0])
+        result[name] = inputs[name][0]
+        // inputs[name][1](values[name])
+      }
+    })
+    // console.log("devuelve", result)
+    return result
+  }
+
+  const someChangeInput = () => {
+    // console.log("getInputValues", infoComercio)
+    if (!infoComercio) return false
+    const names = Object.keys(infoComercio)
+    const namesInputs = Object.keys(inputs)
+
+    var hasChange = false
+
+    names.forEach((name) => {
+      // console.log("name", name)
+      if (namesInputs.indexOf(name) > -1) {
+        if (infoComercio[name] != inputs[name][0]) {
+          hasChange = true
+        }
+      }
+    })
+    // console.log("devuelve", result)
+    return hasChange
+  }
 
   const onLoad = () => {
     getInfoComercio((infoCom) => {
       // console.log("info de comercio", infoCom)
       infoCom.url_base = ModelConfig.get("urlBase")
-
-
       showLoading("Buscando informacion del servidor...")
       Shop.prepare(infoCom, (response) => {
         hideLoading()
         // console.log("respuesta de softus", response)
         setInfoComercio(response.info)
+        setInputValues(response.info)
+        setTimeout(() => {
+          setCambioAlgo(false)
+        }, 1000);
       }, showMessageLoading)
     })
-
-  }
-
-  const cambiaInfoComercio = (campo, valor) => {
-    infoComercio[campo] = valor
-
-    const cp = System.clone(infoComercio)
-    delete (infoComercio.campo)
-
-    setInfoComercio(infoComercio)
-    setTimeout(() => {
-      setInfoComercio(cp)
-    }, 10);
-
   }
 
   const actualizarInfoComercio = () => {
+    console.log("Actualizando informacion del comercio")
+
+    const totalInfo = Object.assign(infoComercio, getInputValues())
+    // console.log("totalInfo", totalInfo)
     showLoading("Actualizando informacion del comercio")
-    Shop.actualizarInfoComercio(infoComercio, (resp) => {
+    Shop.actualizarInfoComercio(totalInfo, (resp) => {
       showMessage("Realizado correctamente")
+
+      setInfoComercio(totalInfo)
+      setInputValues(totalInfo)
+
       hideLoading()
       setCambioAlgo(false)
     }, showMessageLoading)
@@ -122,8 +200,9 @@ const AdminConfigTabShop = ({
 
 
   useEffect(() => {
-    setCambioAlgo(true)
-  }, [infoComercio])
+    // console.log("cambio inputs.. algun cambio?", someChangeInput())
+    setCambioAlgo(someChangeInput())
+  }, [inputs])
 
   const enviarImagen = () => {
     showLoading("Subiendo imagen")
@@ -248,31 +327,35 @@ const AdminConfigTabShop = ({
                 textAlign: "left",
                 marginTop: "30px"
               }}>Informacion de la tienda</h4>
-              <TextField
-                margin="normal"
-                fullWidth
+
+
+              <InputName
+                inputState={inputs.name}
+                validationState={validations.name}
                 label={"Nombre"}
-                type="text" // Cambia dinámicamente el tipo del campo de contraseña
-                value={infoComercio.name}
-                onChange={(e) => cambiaInfoComercio("name", e.target.value)}
+                withLabel={false}
               />
 
-              <TextField
-                margin="normal"
-                fullWidth
-                label={"url de la tienda"}
-                type="text" // Cambia dinámicamente el tipo del campo de contraseña
-                value={infoComercio.url}
-                onChange={(e) => cambiaInfoComercio("url", e.target.value)}
+              <InputPage
+                inputState={inputs.url}
+                validationState={validations.url}
+                label={"Url de la tienda"}
+                withLabel={false}
               />
 
-              <TextField
-                margin="normal"
-                fullWidth
+              <InputGeneric
+                isDecimal={true}
+                inputState={inputs.full_adress}
+                validationState={validations.full_adress}
+                label={"Direccion"}
+                withLabel={false}
+              />
+
+              <InputName
+                inputState={inputs.description}
+                validationState={validations.description}
                 label={"Descripcion"}
-                type="text" // Cambia dinámicamente el tipo del campo de contraseña
-                value={infoComercio.description}
-                onChange={(e) => cambiaInfoComercio("description", e.target.value)}
+                withLabel={false}
               />
 
               <TextField
@@ -281,7 +364,6 @@ const AdminConfigTabShop = ({
                 label={"Rut"}
                 type="text" // Cambia dinámicamente el tipo del campo de contraseña
                 value={infoComercio.unique_doc}
-                onChange={(e) => cambiaInfoComercio("unique_doc", e.target.value)}
               />
 
 
@@ -297,15 +379,14 @@ const AdminConfigTabShop = ({
 
                 <Grid item xs={12} lg={12}>
 
-
-                  <TextField
-                    margin="normal"
-                    fullWidth
+                  <InputGeneric
+                    isDecimal={true}
+                    inputState={inputs.gps_position}
+                    validationState={validations.gps_position}
                     label={"Gps"}
-                    type="text" // Cambia dinámicamente el tipo del campo de contraseña
-                    value={infoComercio.gps_position}
-                    onChange={(e) => cambiaInfoComercio("gps_position", e.target.value)}
+                    withLabel={false}
                   />
+
 
                 </Grid>
 
@@ -313,7 +394,7 @@ const AdminConfigTabShop = ({
                   {infoComercio.gps_position != "" && (
                     <SmallButton textButton={"Ver en mapa"} actionButton={() => {
                       // -34.566302, -58.543924
-                      const coords = infoComercio.gps_position.replaceAll(" ", "").split(",")
+                      const coords = inputs.gps_position[0].replaceAll(" ", "").split(",")
                       const lat = coords[0]
                       const lon = coords[1]
 
@@ -345,7 +426,7 @@ const AdminConfigTabShop = ({
                         const longitud = position.coords.longitude;
                         console.log("actualiza gps", latitud, "..", longitud)
                         // callbackOk(latitud, longitud)
-                        cambiaInfoComercio("gps_position", latitud + ", " + longitud)
+                        inputs.gps_position[1](latitud + ", " + longitud)
                         showMessage("Capturado gps correctamente")
                         // -34.543082, -58.575656
 
@@ -374,23 +455,24 @@ const AdminConfigTabShop = ({
                 </Grid>
 
                 <Grid item xs={6} lg={6}>
-                  <TextField
-                    margin="normal"
-                    fullWidth
+
+                  <InputGeneric
+                    isDecimal={true}
+                    inputState={inputs.time_start}
+                    validationState={validations.time_start}
                     label={"Apertura"}
-                    type="text" // Cambia dinámicamente el tipo del campo de contraseña
-                    value={infoComercio.time_start}
-                    onChange={(e) => cambiaInfoComercio("time_start", e.target.value)}
+                    withLabel={false}
                   />
+
                 </Grid>
                 <Grid item xs={6} lg={6}>
-                  <TextField
-                    margin="normal"
-                    fullWidth
+
+                  <InputGeneric
+                    isDecimal={true}
+                    inputState={inputs.time_end}
+                    validationState={validations.time_end}
                     label={"Cierre"}
-                    type="text" // Cambia dinámicamente el tipo del campo de contraseña
-                    value={infoComercio.time_end}
-                    onChange={(e) => cambiaInfoComercio("time_end", e.target.value)}
+                    withLabel={false}
                   />
 
                   <br />
@@ -402,14 +484,39 @@ const AdminConfigTabShop = ({
 
 
 
+              <Grid container spacing={2}>
+                <Grid item xs={12} lg={12}>
+                  <SmallButton
+                    textButton={"Guardar cambios"}
+                    style={{ width: "250px" }}
+                    isDisabled={!cambioAlgo}
+                    actionButton={actualizarInfoComercio}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <SmallSecondaryButton
+                    textButton={"Tarifas de envios"}
+                    style={{ width: "100%" }}
+                    actionButton={() => setShowZones(true)}
+                  />
 
+                  <ShopDeliveryZones infoComercio={infoComercio} setOpenDialog={setShowZones} openDialog={showZones} />
+                  <ShopDeliveryTimes infoComercio={infoComercio} setOpenDialog={setShowTimes} openDialog={showTimes} />
 
-              <SmallButton
-                textButton={"Guardar cambios"}
-                style={{ width: "250px" }}
-                isDisabled={!cambioAlgo}
-                actionButton={actualizarInfoComercio}
-              />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <SmallSecondaryButton
+                    textButton={"Horarios entregas programadas"}
+                    style={{ width: "100%" }}
+                    actionButton={() => setShowTimes(true)}
+                  />
+                </Grid>
+                <Grid item xs={12} lg={12}>
+                  <br />
+                  <br />
+                  <br />
+                </Grid>
+              </Grid>
 
 
             </div>

@@ -26,7 +26,7 @@ import ModelConfig from "../../Models/ModelConfig";
 import Product from "../../Models/Product";
 import InputName from "../Elements/Compuestos/InputName";
 import System from "../../Helpers/System";
-import PropertyImage from "../Elements/ExtendProperty/PropertyImage";
+import InputImage from "../Elements/Compuestos/InputImage.jsx";
 
 const theme = createTheme();
 
@@ -107,7 +107,7 @@ const FormCategoria = ({
           {editData && (
             <Grid item xs={12} sm={12} md={12} lg={12}>
 
-              <PropertyImage topic={"categoria"} unique={editData.idCategoria} />
+              <InputImage topic={"categoria"} unique={editData.idCategoria} product={editData} />
 
             </Grid>
           )}

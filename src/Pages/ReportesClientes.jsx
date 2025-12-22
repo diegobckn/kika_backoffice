@@ -37,15 +37,15 @@ import axios from "axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ModelConfig from "../Models/ModelConfig";
+import System from "../Helpers/System";
 
-const ReportesClientes = () => {
-  const apiUrl = ModelConfig.get().urlBase; 
+export default () => {
+  const apiUrl = ModelConfig.get().urlBase;
   const [proveedores, setProveedores] = useState([]);
-  const [open, setOpen] = useState(false);
   const [selectedProveedor, setSelectedProveedor] = useState([]);
   const [openPagar, setOpenPagar] = useState(false);
   const [groupedProveedores, setGroupedProveedores] = useState([]);
-  
+
   const [openPaymentProcess, setOpenPaymentProcess] = useState(false);
   const [openPaymentGroupProcess, setOpenPaymentGroupProcess] = useState(false);
   const [metodoPago, setMetodoPago] = useState("");
@@ -76,9 +76,6 @@ const ReportesClientes = () => {
     direction: "asc",
   });
 
-  const [sortedProveedores, setSortedProveedores] = useState([]);
-  // const [documentCountsByRut, setDocumentCountsByRut] = useState({});
-
   const [openTransferenciaModal, setOpenTransferenciaModal] = useState(false);
   const [openTransferenciaModal2, setOpenTransferenciaModal2] = useState(false);
 
@@ -105,7 +102,6 @@ const ReportesClientes = () => {
       const response = await axios.get(
         `${apiUrl}/ReporteClientes/GetAllClientesDeudas`
       );
-      // "https://www.easyposdev.somee.com/api/ReporteClientes/GetAllClientesDeudas"
       setProveedores(response.data.clienteDeudaAlls);
     } catch (error) {
       console.error("Error fetching clientes:", error);
@@ -113,30 +109,8 @@ const ReportesClientes = () => {
   };
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchClientes();
-    }, 3000); // Fetch users every 3 seconds
-
-    return () => clearInterval(intervalId);
+    fetchClientes();
   }, []);
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     fetchProveedores();
-  //   }, 3000); // Fetch users every 3 seconds
-
-  //   return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  // }, []);
-
-  const handleClickOpen = (proveedor) => {
-    setSelectedProveedor(proveedor);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedProveedor(null);
-  };
 
   const handlePagarOpen = (rut) => {
     const filteredProveedores = proveedores.filter(
@@ -182,7 +156,7 @@ const ReportesClientes = () => {
     setOpenPaymentGroupProcess(false);
   };
 
-  
+
 
   const getTotalSelected = () => {
     if (paymentOrigin === "detalleProveedor" && selectedProveedor) {
@@ -210,7 +184,7 @@ const ReportesClientes = () => {
       switch (metodoPago) {
         case "TRANSFERENCIA":
           endpoint =
-          `${apiUrl}/Clientes/PostClientePagarDeudaTransferenciaByIdCliente`;
+            `${apiUrl}/Clientes/PostClientePagarDeudaTransferenciaByIdCliente`;
 
           // if (
           //   nombre === "" ||
@@ -317,7 +291,7 @@ const ReportesClientes = () => {
 
         case "EFECTIVO":
           endpoint =
-          `${apiUrl}/Clientes/PostClientePagarDeudaByIdCliente`;
+            `${apiUrl}/Clientes/PostClientePagarDeudaByIdCliente`;
 
           requestBody = {
             deudaIds: [
@@ -356,7 +330,7 @@ const ReportesClientes = () => {
         setSelectedBanco("")
         setTipoCuenta("")
         setNroCuenta("")
-       
+
         setNroOperacion("")
 
         setTimeout(() => {
@@ -373,7 +347,7 @@ const ReportesClientes = () => {
   };
 
 
- 
+
 
   const totalGeneral = proveedores.reduce(
     (acc, proveedor) => acc + proveedor.total,
@@ -508,13 +482,13 @@ const ReportesClientes = () => {
       setLoading(true);
 
       let endpoint =
-        "https://www.easypos.somee.com/api/Clientes/PostClientePagarDeudaByIdCliente";
+        apiUrl + "/Clientes/PostClientePagarDeudaByIdCliente";
 
       let requestBody = {};
 
       if (metodoPago === "TRANSFERENCIA") {
         endpoint =
-          "https://www.easypos.somee.com/api/Clientes/PostClientePagarDeudaTransferenciaByIdCliente";
+          apiUrl + "/Clientes/PostClientePagarDeudaTransferenciaByIdCliente";
 
         if (
           nombre === "" ||
@@ -555,7 +529,7 @@ const ReportesClientes = () => {
         };
       } else if (metodoPago === "CHEQUE") {
         endpoint =
-          "https://www.easyposdev.somee.com/api/Clientes/PostClientePagarDeudaChequeByIdCliente";
+          apiUrl + "/Clientes/PostClientePagarDeudaChequeByIdCliente";
         requestBody = {
           montoPagado: montoAPagar,
           metodoPago: metodoPago,
@@ -569,7 +543,7 @@ const ReportesClientes = () => {
         };
       } else if (metodoPago === "EFECTIVO") {
         endpoint =
-        `${apiUrl}/Clientes/PostClientePagarDeudaEfectivoByIdCliente`;
+          `${apiUrl}/Clientes/PostClientePagarDeudaEfectivoByIdCliente`;
         requestBody = {
           montoPagado: montoAPagar,
           metodoPago: metodoPago,
@@ -640,7 +614,7 @@ const ReportesClientes = () => {
         setCantidadPagada(0);
         fetchClientes();
         handleDetailClose();
-    
+
 
 
         setTimeout(() => {
@@ -660,14 +634,14 @@ const ReportesClientes = () => {
   const handleGroupedPayment = async () => {
     try {
       setLoading(true);
-  
+
       let endpoint =
-      `${apiUrl}/Clientes/PostClientePagarDeudaByIdCliente`;
-  
+        `${apiUrl}/Clientes/PostClientePagarDeudaByIdCliente`;
+
       if (metodoPago === "TRANSFERENCIA") {
         endpoint =
-        `${apiUrl}/Clientes/PostClientePagarDeudaTransferenciaByIdCliente`;
-  
+          `${apiUrl}/Clientes/PostClientePagarDeudaTransferenciaByIdCliente`;
+
         if (
           nombre === "" ||
           rut === "" ||
@@ -683,33 +657,33 @@ const ReportesClientes = () => {
           setLoading(false);
           return;
         }
-  
+
         if (!validarRutChileno(rut)) {
           setTransferenciaError("El RUT ingresado NO es válido.");
           setLoading(false);
           return;
         }
       }
-  
+
       if (!metodoPago) {
         setError("Por favor, selecciona un método de pago.");
         setLoading(false);
         return;
       } else setError("");
-  
+
       const selectedDeudas = groupedProveedores.filter((deuda) => selectedIds.includes(deuda.id));
       if (selectedDeudas.length === 0) {
         setError("Por favor, selecciona al menos una deuda para pagar.");
         setLoading(false);
         return;
       }
-  
+
       const deudaIds = selectedDeudas.map((deuda) => ({
         idCuentaCorriente: deuda.id,
         idCabecera: deuda.idCabecera,
         total: deuda.total,
       }));
-  
+
       const requestBody = {
         deudaIds: deudaIds,
         montoPagado: montoAPagar,
@@ -726,14 +700,14 @@ const ReportesClientes = () => {
           nroOperacion: nroOperacion,
         } : null,
       };
-  
+
       console.log("Request Body:", requestBody);
-  
+
       const response = await axios.post(endpoint, requestBody);
-  
+
       console.log("Response:", response.data);
       console.log("ResponseStatus:", response.data.statusCode);
-  
+
       if (response.data.statusCode === 200) {
         setSnackbarOpen(true);
         setSnackbarMessage(response.data.descripcion);
@@ -744,7 +718,7 @@ const ReportesClientes = () => {
         handleTransferenciaModalClose2();
         handleClosePaymentGroupProcess();
         handlePagarClose();
-  
+
         setTimeout(() => {
           handleClosePaymentProcess();
         }, 2000);
@@ -757,8 +731,8 @@ const ReportesClientes = () => {
       setLoading(false);
     }
   };
-  
-  
+
+
 
   const compareRut = (a, b) => {
     if (!a || !b) return 0;
@@ -1025,7 +999,7 @@ const ReportesClientes = () => {
                                     style={{
                                       color:
                                         order.field === "nroComprobante" &&
-                                        order.direction === "asc"
+                                          order.direction === "asc"
                                           ? "black"
                                           : "dimgrey",
                                     }}
@@ -1035,7 +1009,7 @@ const ReportesClientes = () => {
                                     style={{
                                       color:
                                         order.field === "nroComprobante" &&
-                                        order.direction === "desc"
+                                          order.direction === "desc"
                                           ? "black"
                                           : "dimgrey",
                                     }}
@@ -1048,7 +1022,7 @@ const ReportesClientes = () => {
                                     style={{
                                       color:
                                         order.field === "fecha" &&
-                                        order.direction === "asc"
+                                          order.direction === "asc"
                                           ? "black"
                                           : "dimgrey",
                                     }}
@@ -1058,7 +1032,7 @@ const ReportesClientes = () => {
                                     style={{
                                       color:
                                         order.field === "fecha" &&
-                                        order.direction === "desc"
+                                          order.direction === "desc"
                                           ? "black"
                                           : "dimgrey",
                                     }}
@@ -1071,7 +1045,7 @@ const ReportesClientes = () => {
                                     style={{
                                       color:
                                         order.field === "total" &&
-                                        order.direction === "asc"
+                                          order.direction === "asc"
                                           ? "black"
                                           : "dimgrey",
                                     }}
@@ -1081,7 +1055,7 @@ const ReportesClientes = () => {
                                     style={{
                                       color:
                                         order.field === "total" &&
-                                        order.direction === "desc"
+                                          order.direction === "desc"
                                           ? "black"
                                           : "dimgrey",
                                     }}
@@ -1201,6 +1175,7 @@ const ReportesClientes = () => {
                       <TableCell>Cantidad</TableCell>
                       <TableCell>Precio Unidad</TableCell>
                       <TableCell>Costo</TableCell>
+                      <TableCell>Subtotal</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -1209,8 +1184,9 @@ const ReportesClientes = () => {
                         <TableRow key={detalle.codProducto}>
                           <TableCell>{detalle.descripcionProducto}</TableCell>
                           <TableCell>{detalle.cantidad}</TableCell>
-                          <TableCell>{detalle.precioUnidad}</TableCell>
-                          <TableCell>${detalle.costo}</TableCell>
+                          <TableCell>${System.formatMonedaLocal(detalle.precioUnidad,false)}</TableCell>
+                          <TableCell>${System.formatMonedaLocal(detalle.costo,false)}</TableCell>
+                          <TableCell>${System.formatMonedaLocal(detalle.cantidad * detalle.precioUnidad,false)}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -1442,9 +1418,9 @@ const ReportesClientes = () => {
                       paymentOrigin === "detalleProveedor"
                         ? selectedProveedor.total
                         : groupedProveedores.reduce(
-                            (acc, proveedor) => acc + proveedor.total,
-                            0
-                          )
+                          (acc, proveedor) => acc + proveedor.total,
+                          0
+                        )
                     );
                     handleChequeModalOpen();
                   }}
@@ -1606,9 +1582,9 @@ const ReportesClientes = () => {
                       paymentOrigin === "detalleProveedor"
                         ? selectedProveedor.total
                         : groupedProveedores.reduce(
-                            (acc, proveedor) => acc + proveedor.total,
-                            0
-                          )
+                          (acc, proveedor) => acc + proveedor.total,
+                          0
+                        )
                     );
                     handleChequeModalOpen();
                   }}
@@ -2175,4 +2151,3 @@ const ReportesClientes = () => {
   );
 };
 
-export default ReportesClientes;

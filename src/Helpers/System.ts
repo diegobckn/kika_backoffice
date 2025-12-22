@@ -100,7 +100,7 @@ class System {
         return Math.round(parseFloat(valor + "") * 100) / 100
     }
 
-    typeIntFloat(value) {
+    typeIntFloat(value: any) {
         if ((value + "").indexOf(".") > -1) {
             return parseFloat(value + "")
         } else {
@@ -108,7 +108,7 @@ class System {
         }
     }
 
-    static clone(obj) {
+    static clone(obj: any) {
         return JSON.parse(JSON.stringify(obj))
     }
 
@@ -118,7 +118,7 @@ class System {
             return {}
         }
         var [location, allLast] = allStr.split("?")
-        var vars = {}
+        var vars: any = {}
         allLast.split("&").forEach((nameValue) => {
             const [name, value] = nameValue.split("=")
             vars[name] = value
@@ -126,28 +126,28 @@ class System {
         return vars
     }
 
-    static addInObj(setFunction, fieldName, fieldValue) {
-        setFunction((oldProduct) => {
+    static addInObj(setFunction: any, fieldName: string, fieldValue: any) {
+        setFunction((oldProduct: any) => {
             const newProduct = { ...oldProduct };
             newProduct[fieldName] = fieldValue
             return newProduct;
         });
     }
 
-    static addAllInObj(setFunction, objValues) {
-        setFunction((oldProduct) => {
+    static addAllInObj(setFunction: any, objValues: any) {
+        setFunction((oldProduct: any) => {
             const newProduct = { ...oldProduct, ...objValues };
             return newProduct;
         });
     }
 
-    static addAllInArr(setFunction, arrayOriginal, index, objValues) {
+    static addAllInArr(setFunction: any, arrayOriginal: any, index: number, objValues: any) {
         const newArr = [...arrayOriginal]
         newArr[index] = objValues
         setFunction(newArr)
     }
 
-    static allValidationOk = (validators, showMessageFunction) => {
+    static allValidationOk = (validators: any, showMessageFunction: any) => {
         // console.log("allValidationOk:", validators)
         var allOk = true
         // const keys = Object.keys(validators)
@@ -162,8 +162,8 @@ class System {
         return allOk
     }
 
-    static prepareStates = (states) => {
-        const statesValues = {}
+    static prepareStates = (states: any) => {
+        const statesValues: any = {}
         // console.log("clearStates:", states)
         const keys = Object.keys(states)
         keys.forEach((stateKey: any, ix) => {
@@ -174,7 +174,7 @@ class System {
         return statesValues
     }
 
-    static clearStates = (states) => {
+    static clearStates = (states: any) => {
         // console.log("clearStates:", states)
         const keys = Object.keys(states)
         keys.forEach((stateKey: any, ix) => {
@@ -191,7 +191,7 @@ class System {
         })
     }
 
-    static intentarFoco(textInfoRef) {
+    static intentarFoco(textInfoRef: any) {
         // console.log("..intentarFoco",textInfoRef)
         // console.log(textInfoRef)
         if (!textInfoRef || textInfoRef.current == null) {
@@ -229,7 +229,7 @@ class System {
         return result
     }
 
-    static maxStr(str, max, completarConPuntos = true) {
+    static maxStr(str: string, max: number, completarConPuntos = true) {
         var txt = str
         // console.log("original largo", txt.length)
 
@@ -246,17 +246,17 @@ class System {
         return txt
     }
 
-    static camelToUnderscore(key) {
-        return key.replace(/([A-Z])/g, "_$1").toLowerCase();
+    static camelToUnderscore(str: string) {
+        return str.replace(/([A-Z])/g, "_$1").toLowerCase();
     }
 
-    static onlyTime(datetime) {
+    static onlyTime(datetime: string) {
         const arrAll = datetime.split(" ")
         return arrAll[1]
     }
 
     // ej 152000.157 ----> 152.000,15
-    static formatMonedaLocal(valorMoneda, conDecimales = true) {
+    static formatMonedaLocal(valorMoneda: any, conDecimales = true) {
         if (isNaN(valorMoneda)) return "0,00"
         // console.log("formatMonedaLocal", valorMoneda)
         var monedaStr = valorMoneda + ""
@@ -321,7 +321,7 @@ class System {
         return pagina
     }
 
-    static armarStringDesdeArrayObjetos(arrObjetos, propiedad, separacion = ", ") {
+    static armarStringDesdeArrayObjetos(arrObjetos: any, propiedad: any, separacion = ", ") {
 
         console.log("armarStringDesdeArrayObjetos..arrObjetos", arrObjetos)
         console.log("armarStringDesdeArrayObjetos..propiedad", propiedad)
@@ -329,7 +329,7 @@ class System {
         var resu = ""
 
         if (arrObjetos) {
-            arrObjetos.forEach(element => {
+            arrObjetos.forEach((element: any) => {
                 if (resu != "")
                     resu += separacion
                 resu += element[propiedad]
@@ -339,12 +339,17 @@ class System {
         return resu
     }
 
-    static ucfirst(txt) {
+    static ucfirst(txt: string) {
         if (!txt) {
             return '';
         }
         return txt.charAt(0).toUpperCase() + txt.slice(1);
     }
+
+    static isMobile() {
+        const userAgent = navigator.userAgent;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    };
 
 }
 

@@ -6,6 +6,7 @@ import ModelConfig from './ModelConfig.ts';
 import ModelSingleton from './ModelSingleton.ts';
 import EndPoint from './EndPoint.ts';
 import SoporteTicket from './SoporteTicket.ts';
+import System from '../Helpers/System.ts';
 
 
 class Shop extends ModelSingleton {
@@ -14,11 +15,15 @@ class Shop extends ModelSingleton {
     static async prepare(infoComercio: any, callbackOk: any, callbackWrong: any) {
         // const configs = ModelConfig.get()
         var url = "https://softus.com.ar/easypos/create-or-search-shop-from-commerce"
-
         const ant = SoporteTicket.reportarError
         SoporteTicket.reportarError = false
         EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
-            callbackOk(responseData, response);
+            // console.log("prepare..responseData..", responseData)
+            if (typeof (responseData.info) == "string") {
+                callbackWrong(responseData.info);
+            } else {
+                callbackOk(responseData, response);
+            }
             SoporteTicket.reportarError = ant
         }, (err: any) => {
             callbackWrong(err)
@@ -41,7 +46,7 @@ class Shop extends ModelSingleton {
         })
     }
 
-    static async enviarImagen(fileInput:any, infoComercio: any, callbackOk: any, callbackWrong: any) {
+    static async enviarImagen(fileInput: any, infoComercio: any, callbackOk: any, callbackWrong: any) {
         // const configs = ModelConfig.get()
         var url = "https://softus.com.ar/easypos/update-image"
 
@@ -64,63 +69,7 @@ class Shop extends ModelSingleton {
         })
     }
 
-
-    static async enviarImagenProperty(topic: string, unique: string, fileInput: any, infoComercio: any, callbackOk: any, callbackWrong: any) {
-        // console.log("infocomercio", infoComercio)
-        // callbackWrong("x")
-        // return
-        // const configs = ModelConfig.get()
-        var url = "https://softus.com.ar/easypos/update-image-property"
-
-        var formData = new FormData();
-        formData.append('image', fileInput);
-        formData.append('Nro_Rut', infoComercio.Nro_Rut);
-        formData.append('topic', topic);
-        formData.append('unique', unique);
-
-        const ant = SoporteTicket.reportarError
-        SoporteTicket.reportarError = false
-        EndPoint.sendPost(url, formData, (responseData: any, response: any) => {
-            callbackOk(responseData, response);
-            SoporteTicket.reportarError = ant
-        }, (err: any) => {
-            callbackWrong(err)
-            SoporteTicket.reportarError = ant
-        }, {
-            headers: {
-                'Content-Type': 'multipart/form-data', // El servidor debe procesar esto
-            },
-        })
-    }
-
-    static async eliminarImagenProperty(topic: string, unique: string, infoComercio: any, callbackOk: any, callbackWrong: any) {
-        // console.log("infocomercio", infoComercio)
-        // callbackWrong("x")
-        // return
-        // const configs = ModelConfig.get()
-        var url = "https://softus.com.ar/easypos/delete-image-property"
-
-        var formData = new FormData();
-        formData.append('Nro_Rut', infoComercio.Nro_Rut);
-        formData.append('topic', topic);
-        formData.append('unique', unique);
-
-        const ant = SoporteTicket.reportarError
-        SoporteTicket.reportarError = false
-        EndPoint.sendPost(url, formData, (responseData: any, response: any) => {
-            callbackOk(responseData, response);
-            SoporteTicket.reportarError = ant
-        }, (err: any) => {
-            callbackWrong(err)
-            SoporteTicket.reportarError = ant
-        }, {
-            headers: {
-                'Content-Type': 'multipart/form-data', // El servidor debe procesar esto
-            },
-        })
-    }
-
-    static async getProperty(topic: string, unique: string, name:string, infoComercio: any, callbackOk: any, callbackWrong: any) {
+    static async getProperty(topic: string, unique: string, name: string, infoComercio: any, callbackOk: any, callbackWrong: any) {
         // console.log("infocomercio", infoComercio)
         // callbackWrong("x")
         // return
@@ -148,7 +97,7 @@ class Shop extends ModelSingleton {
         })
     }
 
-    static async updateProperty(topic: string, unique: string, name:string, value:string, infoComercio: any, callbackOk: any, callbackWrong: any) {
+    static async updateProperty(topic: string, unique: string, name: string, value: string, infoComercio: any, callbackOk: any, callbackWrong: any) {
         // console.log("infocomercio", infoComercio)
         // callbackWrong("x")
         // return
@@ -204,6 +153,172 @@ class Shop extends ModelSingleton {
         EndPoint.sendPost(url, {
             id: infoComercio.id
         }, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async getAllZones(infoComercio: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/get-all-zones"
+
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async getAllTimes(infoComercio: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/get-all-times"
+
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async getAllZonesCommerce(infoComercio: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/get-all-zones-of-commerce"
+
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async getAllTimesCommerce(infoComercio: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/get-all-times-of-commerce"
+
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async addZoneToCommerce(infoComercio: any, zone: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/add-zone-to-commerce"
+        const info = Object.assign(infoComercio, {
+            zone_id: zone.id
+        })
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async addTimeToCommerce(infoComercio: any, time: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/add-time-to-commerce"
+        const info = Object.assign(infoComercio, {
+            time_id: time.id
+        })
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async removeZoneToCommerce(infoComercio: any, zone: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/remove-zone-to-commerce"
+        const info = Object.assign(infoComercio, {
+            zone_id: zone.id
+        })
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async removeTimeToCommerce(infoComercio: any, time: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/remove-time-to-commerce"
+        const info = Object.assign(infoComercio, {
+            time_id: time.id
+        })
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, infoComercio, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async createAndAssignZoneToCommerce(infoComercio: any, zone: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/create-zone-and-assign-to-commerce"
+        const info = Object.assign(infoComercio, {
+            zone_id: zone.id,
+            zone_price: zone.price,
+            zone_name: zone.name,
+            zone_distance_gps: zone.distance_gps,
+        })
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, info, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+            SoporteTicket.reportarError = ant
+        }, (err: any) => {
+            callbackWrong(err)
+            SoporteTicket.reportarError = ant
+        })
+    }
+
+    static async createAndAssignTimeToCommerce(infoComercio: any, time: any, callbackOk: any, callbackWrong: any) {
+        // const configs = ModelConfig.get()
+        var url = "https://softus.com.ar/easypos/create-time-and-assign-to-commerce"
+        const info = Object.assign(infoComercio, {
+            time_id: time.id,
+            time_name: time.name,
+        })
+        const ant = SoporteTicket.reportarError
+        SoporteTicket.reportarError = false
+        EndPoint.sendPost(url, info, (responseData: any, response: any) => {
             callbackOk(responseData, response);
             SoporteTicket.reportarError = ant
         }, (err: any) => {

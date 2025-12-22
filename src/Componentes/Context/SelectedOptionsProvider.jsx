@@ -18,6 +18,9 @@ import System from "../../Helpers/System";
 import Confirm from "../Dialogs/Confirm";
 import PedirSupervision from "../ScreenDialog/PedirSupervision";
 import Alert from "../Dialogs/Alert";
+import JsBarcode from "jsbarcode";
+import ReactDOM from "react-dom/server";
+
 
 export const SelectedOptionsContext = React.createContext();
 
@@ -136,6 +139,33 @@ export const SelectedOptionsProvider = ({ children }) => {
     setUserData([])
   };
 
+  const crearCodigoBarras = (value) => {
+    let canvas = document.createElement('canvas');
+    JsBarcode(canvas, value, {
+      format: 'CODE128',
+      displayValue: false
+      // height: "80px"
+    });
+    const dataUrl = (canvas.toDataURL())
+
+    return (ReactDOM.renderToString(
+      <div>
+        <div style={{
+          height: "75px",
+          overflow: "hidden",
+          position: "relative",
+          width: "100%"
+        }}>
+          <img style={{
+            marginTop: "-59px",
+            position: "relative",
+            width: 280
+          }} src={dataUrl} alt={value} />
+        </div>
+      </div>
+    ))
+  }
+
   const GeneralElements = () => {
     return (
       <>
@@ -201,7 +231,8 @@ export const SelectedOptionsProvider = ({ children }) => {
         updateUserData,
         getUserData,
 
-        pedirSupervision
+        pedirSupervision,
+        crearCodigoBarras
 
       }}
     >

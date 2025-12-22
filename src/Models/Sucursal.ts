@@ -16,7 +16,7 @@ class Sucursal extends Model {
     return Sucursal.instance;
   }
 
-  async add(data,callbackOk, callbackWrong){
+  async add(data:any,callbackOk:any, callbackWrong:any){
     try {
         const configs = ModelConfig.get()
         var url = configs.urlBase
@@ -31,7 +31,7 @@ class Sucursal extends Model {
         } else {
         callbackWrong("Respuesta desconocida del servidor")
         }
-    } catch (error) {
+    } catch (error:any) {
       if (error.response && error.response.status && error.response.status === 409) {
           callbackWrong(error.response.descripcion)
       } else {
@@ -40,9 +40,9 @@ class Sucursal extends Model {
     }
   }
 
-  static async getAll(callbackOk, callbackWrong){
+  static async getAll(callbackOk:any, callbackWrong:any){
     const url = ModelConfig.get("urlBase") + "/Sucursales/GetAllSucursales"
-    EndPoint.sendGet(url,(responseData, response)=>{
+    EndPoint.sendGet(url,(responseData:any, response:any)=>{
       callbackOk(responseData.sucursals, response)
     },callbackWrong)
   }

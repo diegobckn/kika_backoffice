@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import {
   Box,
@@ -26,15 +26,19 @@ import ModelConfig from "../../../Models/ModelConfig";
 import { SelectedOptionsContext } from "../../Context/SelectedOptionsProvider";
 import Product from "../../../Models/Product";
 import Model from "../../../Models/Model";
+import System from "../../../Helpers/System";
 
 const SearchProducts = ({
   onProductSelect,
   labelInput = "Buscar producto...",
   textButton = "Buscar",
-  focus = true
+  focus = true,
+  agregarSiEsUnico = false
 }) => {
+
+  const inputRef = useRef(null)
+
   const { showLoading, hideLoading } = useContext(SelectedOptionsContext);
-  const apiUrl = ModelConfig.get().urlBase;
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -65,9 +69,14 @@ const SearchProducts = ({
         pagina: 1, // Pagina 1 para la busqueda
       },
       (prods) => {
-        setFilteredProducts(prods); // Actualiza los productos filtrados
         hideLoading();
         setSearched(true); // Marca que se ha realizado una búsqueda
+        if (agregarSiEsUnico && prods.length == 1) {
+          handleAddProduct(prods[0])
+          setFilteredProducts([]); // Actualiza los productos filtrados
+        } else {
+          setFilteredProducts(prods); // Actualiza los productos filtrados
+        }
       },
       () => {
         hideLoading();
@@ -121,6 +130,9 @@ const SearchProducts = ({
       cargaAnteriorDeSesion(setSearchTerm, "ultimaBusquedaStockMobile")
     }
     console.log("cambio focus", focus)
+    if (focus && inputRef) {
+      System.intentarFoco(inputRef)
+    }
   }, [focus])
 
 
@@ -129,6 +141,7 @@ const SearchProducts = ({
       <Grid container spacing={2} alignItems="stretch">
         <Grid item xs={12}>
           <TextField
+            ref={inputRef}
             fullWidth
             margin="dense"
             label={labelInput}
@@ -196,7 +209,7 @@ const SearchProducts = ({
                             align="center"
                             sx={{ padding: "6px", fontSize: "14px" }}
                           >
-                            <strong>{prod.nombre}</strong>
+                            <strong> {prod.nombre} <br /> #{prod.idProducto}</strong>
                           </TableCell>
                         </TableRow>
                       </TableBody>

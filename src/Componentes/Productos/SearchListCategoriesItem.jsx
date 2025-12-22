@@ -38,10 +38,12 @@ const SearchListCategoriesItem = ({
 
   const [showEdit, setShowEdit] = useState(false)
 
+  const [image, setImage] = useState("")
+
   const handleDelete = () => {
     showConfirm("Eliminar " + item.descripcion + "?", () => {
       Product.deleteCategory({
-        Categoriaid:item.idCategoria
+        Categoriaid: item.idCategoria
       }, () => {
         showMessage("Eliminado correctamente")
         onDelete()
@@ -49,9 +51,43 @@ const SearchListCategoriesItem = ({
     })
   }
 
+  useEffect(() => {
+    // console.log("mostrando item de producto")
+    // console.log(product)
+
+    Product.cargarImagen(item, (urlImagen) => {
+      setImage(urlImagen)
+    })
+  }, [item])
+
   return (
     <TableRow>
-      <TableCell>{item.idCategoria}</TableCell>
+      <TableCell>
+
+        <div style={{
+          textAlign: "center"
+        }}>
+
+          #{item.idCategoria}
+          {image != "" && (
+            <>
+              <br />
+              <img
+                style={{
+                  "maxWidth": "60px",
+                  "borderRadius": "10px",
+                  "maxHeight": "60px",
+                }}
+                src={image}
+                alt=""
+              />
+            </>
+          )}
+
+        </div>
+
+
+      </TableCell>
       <TableCell>{item.descripcion.trim()}</TableCell>
       <TableCell>
         <IconButton onClick={() => setShowEdit(true)}>

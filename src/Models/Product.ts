@@ -1,11 +1,9 @@
-import StorageSesion from '../Helpers/StorageSesion.ts';
 import Model from './Model.ts';
 import BaseConfig from "../definitions/BaseConfig.ts";
 import axios from 'axios';
 import ModelConfig from './ModelConfig.ts';
 import System from '../Helpers/System.ts';
 import EndPoint from './EndPoint.ts';
-import dayjs from 'dayjs';
 
 
 class Product extends Model {
@@ -184,13 +182,15 @@ class Product extends Model {
 
     async getAllPaginate({
         pageNumber = 1,
-        rowPage = 10
+        rowPage = 10,
+        sucursal = 0
     }, callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase + "/ProductosTmp/GetProductosPaginados"
             url += "?pageNumber=" + pageNumber
             url += "&rowPage=" + rowPage
+            url += "&codigoSucursal=" + sucursal
 
             const response = await axios.get(url);
             // console.log("API Response:", response.data);
@@ -296,7 +296,8 @@ class Product extends Model {
         description,
         codigoCliente,
         canPorPagina = 10,
-        pagina = 1
+        pagina = 1,
+        sucursal = 0
     }: any, callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
@@ -308,6 +309,7 @@ class Product extends Model {
             url += "&pageNumber=" + pagina
             url += "&rowPage=" + canPorPagina
             url += "&idEmpresa=" + configs.idEmpresa
+            url += "&codigoSucursal=" + sucursal
             const response = await axios.get(url);
             if (
                 response.data.statusCode == 200
@@ -348,7 +350,11 @@ class Product extends Model {
         }
     }
 
-    async findByCodigoBarras({ codigoProducto, codigoCliente }: any, callbackOk: any, callbackWrong: any) {
+    async findByCodigoBarras({
+        codigoProducto,
+        codigoCliente,
+        sucursal = 0
+    }: any, callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase +
@@ -357,6 +363,7 @@ class Product extends Model {
                 url += "&codigoCliente=" + codigoCliente
             }
             url += "&idEmpresa=" + configs.idEmpresa
+            url += "&codigoSucursal=" + sucursal
 
             const response = await axios.get(url);
             if (
@@ -952,6 +959,136 @@ class Product extends Model {
         }, callbackWrong)
     }
 
+    static nombreImagen(producto: any, enElServidor = true, evitarCache = true) {
+        // console.log("nombreImagen de ", producto)
+        var nombreImg = ""
+        //revisamos si es un producto, categoria, subcategoria, familia o subfamilia
+        // segun que propiedad tiene
+        if (producto.nombre) {
+            nombreImg = (producto.nombre + ".jpg").toLowerCase()
+        } else if (producto.descripcion) {
+            nombreImg = (producto.descripcion + ".jpg").toLowerCase()
+        }
+
+        if (enElServidor) {
+            nombreImg = ModelConfig.get("urlBase") + "/imagenes/" + nombreImg
+            nombreImg = nombreImg.replace("/api/", "/")
+        }
+
+        if (evitarCache) {
+            var dt = new Date()
+            nombreImg = nombreImg + "?v=" + dt.getTime()
+        }
+        return nombreImg
+    }
+
+    static async cargarImagen(product: any, callbackOk: any) {
+        var url = this.nombreImagen(product, true, true)
+
+        try {
+            const response = await axios.get(url);
+            // console.log("response de cargarImagen", response)
+            callbackOk(url)
+        } catch (err) {
+            callbackOk(BaseConfig.productoSinImagen)
+        } finally {
+        }
+        // EndPoint.sendGet(url, (responseData: any, response: any) => {
+        //     callbackOk(BaseConfig.productoSinImagen)
+        // }, (err: any) => {
+        //     callbackOk(BaseConfig.productoSinImagen)
+        // })
+    }
+
+    static async signarImagen(product: any, fileInput: any, callbackOk: any, callbackWrong: any) {
+        var url = ModelConfig.get("urlBase")
+            + "/ImagenesBalanza/UploadImagenBalanza"
+
+        const nombreArchivoImagen = this.nombreImagen(product, false, false)
+        console.log("signarImagen")
+        console.log("nombreArchivoImagen", nombreArchivoImagen)
+
+        var formData = new FormData();
+        formData.append('file', fileInput, nombreArchivoImagen);
+
+        for (const value of formData.values()) {
+            console.log("item", value);
+        }
+
+        EndPoint.sendPost(url, formData, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+        }, (err: any) => {
+            callbackWrong(err)
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // El servidor debe procesar esto
+            },
+        })
+    }
+
+    static base64ToBlob(base64: string, contentType: string) {
+        const base64Arr = base64.split(',')
+        var byteCharacters = ""
+        if (base64Arr.length > 1) {
+            byteCharacters = atob(base64Arr[1]); // Remove "data:image/png;base64," part
+        } else {
+            byteCharacters = atob(base64); // Remove "data:image/png;base64," part
+        }
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: contentType });
+    }
+
+    static async signarImagenResize(product: any, fileInput: any, callbackOk: any, callbackWrong: any) {
+        var me = this;
+        var url = "https://softus.com.ar/easypos/resize-image"
+
+        const nombreArchivoImagen = this.nombreImagen(product, false, false)
+        console.log("signarImagen")
+        console.log("nombreArchivoImagen", nombreArchivoImagen)
+
+        var formData = new FormData();
+        formData.append('file', fileInput, nombreArchivoImagen);
+        formData.append('maxwidth', "300");
+        formData.append('maxheight', "300");
+
+        for (const value of formData.values()) {
+            console.log("item", value);
+        }
+
+        EndPoint.sendPost(url, formData, (responseData: any, response: any) => {
+            console.log("responseData", responseData)
+            // callbackOk(responseData, response);
+            // return
+            if (responseData.image == "") {
+                callbackWrong("No se pudo subir la imagen. Consultar las condiciones a cumplir con las imagenes.")
+                return
+            }
+            const contentType = "image/jpg";
+            const blob = me.base64ToBlob(responseData.image, contentType);
+
+            me.signarImagen(product, blob, callbackOk, callbackWrong)
+        }, (err: any) => {
+            callbackWrong(err)
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // El servidor debe procesar esto
+            },
+        })
+    }
+
+    static async crearRangoPrecios(arrayPrecios: any, callbackOk: any, callbackWrong: any) {
+        var url = ModelConfig.get("urlBase")
+            + "/ProductosTmp/AddProductoRangoPrecio"
+
+        EndPoint.sendPost(url, arrayPrecios, (responseData: any, response: any) => {
+            callbackOk(responseData, response);
+        }, callbackWrong)
+
+    }
 
 };
 

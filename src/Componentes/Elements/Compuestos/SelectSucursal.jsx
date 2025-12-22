@@ -24,7 +24,8 @@ const SelectSucursal = ({
   fieldName = "select",
   label = fieldName[0].toUpperCase() + fieldName.substr(1),
   required = false,
-  vars = null
+  vars = null,
+  styles = {},
 }) => {
 
   const {
@@ -134,11 +135,16 @@ const SelectSucursal = ({
         </InputLabel>
       )}
 
-
-      <Select
+      <TextField
+        select
         sx={{
-          marginTop: "17px"
+          ...{
+            marginTop: (withLabel ? "17px" : "")
+          },
+          ...styles
         }}
+
+
         fullWidth
         autoFocus={autoFocus}
         required={required}
@@ -161,7 +167,7 @@ const SelectSucursal = ({
             {selectOption.descripcionSucursal}
           </MenuItem>
         ))}
-      </Select>
+      </TextField>
     </>
   );
 };

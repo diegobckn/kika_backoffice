@@ -18,53 +18,53 @@ import SelectSucursal from "../Elements/Compuestos/SelectSucursal";
 import TiposPasarela from "../../definitions/TiposPasarela";
 import SucursalCaja from "../../Models/SucursalCaja";
 
-export default function EditarCajaSucursal({ 
+export default function EditarCajaSucursal({
   onClose,
   openDialog,
   setOpendialog,
   data,
   onUpdate
 }) {
-  const { 
-    showLoading, 
-    hideLoading, 
-    showLoadingDialog, 
-    showMessage 
+  const {
+    showLoading,
+    hideLoading,
+    showLoadingDialog,
+    showMessage
 
   } =
     useContext(SelectedOptionsContext);
 
-    const [debeImprimir, setDebeImprimir] = useState(false)
-    var states = {
-      nombre:useState(""),
-      sucursal:useState(""),
-      // tipoImpresion:useState(""),
-      // certificado:useState(""),
-      // pasarela:useState(""),
-    
-      cliente_id : useState(""),
-      secret : useState(""),
-      baseurl : useState(""),
-      sNumber : useState(""),
-      
-      nombreImpresora : useState(""),
-    
-    };
+  const [debeImprimir, setDebeImprimir] = useState(false)
+  var states = {
+    nombre: useState(""),
+    sucursal: useState(""),
+    // tipoImpresion:useState(""),
+    // certificado:useState(""),
+    // pasarela:useState(""),
 
-    var validatorStates = {
-      nombre: useState(null),
-      sucursal: useState(null),
-      // certificado: useState(null),
-      // tipoImpresion: useState(null),
-      // pasarela: useState(null),
+    cliente_id: useState(""),
+    secret: useState(""),
+    baseurl: useState(""),
+    sNumber: useState(""),
 
-      cliente_id: useState(null),
-      secret: useState(null),
-      baseurl: useState(null),
-      sNumber: useState(null),
-      
-      nombreImpresora: useState(null),
-    };
+    nombreImpresora: useState(""),
+
+  };
+
+  var validatorStates = {
+    nombre: useState(null),
+    sucursal: useState(null),
+    // certificado: useState(null),
+    // tipoImpresion: useState(null),
+    // pasarela: useState(null),
+
+    cliente_id: useState(null),
+    secret: useState(null),
+    baseurl: useState(null),
+    sNumber: useState(null),
+
+    nombreImpresora: useState(null),
+  };
 
   const handleSubmit = async () => {
     if (!System.allValidationOk(validatorStates, showMessage)) {
@@ -82,45 +82,45 @@ export default function EditarCajaSucursal({
           "fechaIngreso": System.getInstance().getDateForServer(),
           "fechaUltAct": System.getInstance().getDateForServer(),
           "idCaja": data.idCaja,
-    
-    
+
+
           "grupo": "Redelcom",
           "entrada": "cliente_id",
           "valor": states.cliente_id[0],
         },
 
         {
-            "fechaIngreso": System.getInstance().getDateForServer(),
-            "fechaUltAct": System.getInstance().getDateForServer(),
-            "idCaja": data.idCaja,
-      
-      
-            "grupo": "Redelcom",
-            "entrada": "secret",
-            "valor": states.secret[0],
+          "fechaIngreso": System.getInstance().getDateForServer(),
+          "fechaUltAct": System.getInstance().getDateForServer(),
+          "idCaja": data.idCaja,
+
+
+          "grupo": "Redelcom",
+          "entrada": "secret",
+          "valor": states.secret[0],
         },
 
         {
-            "fechaIngreso": System.getInstance().getDateForServer(),
-            "fechaUltAct": System.getInstance().getDateForServer(),
-            "idCaja": data.idCaja,
-      
-      
-            "grupo": "Redelcom",
-            "entrada": "baseurl",
-            "valor": states.baseurl[0],
+          "fechaIngreso": System.getInstance().getDateForServer(),
+          "fechaUltAct": System.getInstance().getDateForServer(),
+          "idCaja": data.idCaja,
+
+
+          "grupo": "Redelcom",
+          "entrada": "baseurl",
+          "valor": states.baseurl[0],
         },
 
 
         {
-            "fechaIngreso": System.getInstance().getDateForServer(),
-            "fechaUltAct": System.getInstance().getDateForServer(),
-            "idCaja": data.idCaja,
-      
-      
-            "grupo": "Redelcom",
-            "entrada": "sNumber",
-            "valor": states.sNumber[0],
+          "fechaIngreso": System.getInstance().getDateForServer(),
+          "fechaUltAct": System.getInstance().getDateForServer(),
+          "idCaja": data.idCaja,
+
+
+          "grupo": "Redelcom",
+          "entrada": "sNumber",
+          "valor": states.sNumber[0],
         },
       ]
     };
@@ -128,37 +128,37 @@ export default function EditarCajaSucursal({
     console.log("Datos antes de enviar:", dataEdit);
     showLoading("Enviando...");
     const caj = new SucursalCaja()
-    caj.add(dataEdit,(responseData)=>{
+    caj.add(dataEdit, (responseData) => {
       hideLoading();
       showMessage(responseData.descripcion)
       onUpdate()
-    },(error)=>{
+    }, (error) => {
       hideLoading();
       showMessage(error)
     })
   };
 
-  useEffect(()=>{
-    if(data){
-        console.log("data",data)
-        states.nombre[1](data.sPuntoVenta)
-        states.sucursal[1](data.idSucursal)
+  useEffect(() => {
+    if (data) {
+      console.log("data", data)
+      states.nombre[1](data.sPuntoVenta)
+      states.sucursal[1](data.idSucursal)
 
-        if(data.puntoVentaConfiguracions.length>0){
-          data.puntoVentaConfiguracions.forEach((cfg,ix)=>{
-            if(cfg.entrada == "cliente_id"){
-              states.cliente_id[1](cfg.valor)
-            }else if(cfg.entrada == "secret"){
-              states.secret[1](cfg.valor)
-            }else if(cfg.entrada == "baseurl"){
-              states.baseurl[1](cfg.valor)
-            }else if(cfg.entrada == "sNumber"){
-              states.sNumber[1](cfg.valor)
-            }
-          })
-        }
+      if (data.puntoVentaConfiguracions && data.puntoVentaConfiguracions.length > 0) {
+        data.puntoVentaConfiguracions.forEach((cfg, ix) => {
+          if (cfg.entrada == "cliente_id") {
+            states.cliente_id[1](cfg.valor)
+          } else if (cfg.entrada == "secret") {
+            states.secret[1](cfg.valor)
+          } else if (cfg.entrada == "baseurl") {
+            states.baseurl[1](cfg.valor)
+          } else if (cfg.entrada == "sNumber") {
+            states.sNumber[1](cfg.valor)
+          }
+        })
+      }
     }
-  },[data, openDialog])
+  }, [data, openDialog])
 
   return (
     <Dialog
@@ -176,7 +176,7 @@ export default function EditarCajaSucursal({
           </Grid>
 
           <Grid item xs={12} md={6}>
-          <InputName
+            <InputName
               inputState={states.nombre}
               fieldName="Descripcion"
               required={true}
@@ -185,7 +185,7 @@ export default function EditarCajaSucursal({
           </Grid>
 
           <Grid item xs={12} md={6}>
-          <SelectSucursal
+            <SelectSucursal
               inputState={states.sucursal}
               fieldName="Sucursal"
               required={true}
@@ -194,111 +194,111 @@ export default function EditarCajaSucursal({
           </Grid>
 
           <Grid item xs={12} sm={12} md={12} lg={12}>
-          <Typography variant="h4" sx={{
-            padding:"30px 20px 0 10px"
-          }}>Terminales de pago</Typography>
-          <Box sx={{ 
-            display: "flex",
-            border: "1px solid dimgray",
-            backgroundColor:"#F7F7F7",
-            borderRadius:"3px",
-            marginLeft:"15px",
-            marginTop:"20px",
-            padding:"20px"
+            <Typography variant="h4" sx={{
+              padding: "30px 20px 0 10px"
+            }}>Terminales de pago</Typography>
+            <Box sx={{
+              display: "flex",
+              border: "1px solid dimgray",
+              backgroundColor: "#F7F7F7",
+              borderRadius: "3px",
+              marginLeft: "15px",
+              marginTop: "20px",
+              padding: "20px"
             }}>
 
-            <Grid container spacing={2} sx={{ padding: "2%" }}>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <Typography variant="h5">Redelcom</Typography>
-              </Grid>
+              <Grid container spacing={2} sx={{ padding: "2%" }}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <Typography variant="h5">Redelcom</Typography>
+                </Grid>
 
-              <br/>
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <InputName
-                  inputState={states.cliente_id}
-                  required={false}
-                  fieldName="cliente id"
-                  validationState={validatorStates.cliente_id}
+                <br />
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <InputName
+                    inputState={states.cliente_id}
+                    required={false}
+                    fieldName="cliente id"
+                    validationState={validatorStates.cliente_id}
                   />
-              </Grid>
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <InputName
-                  inputState={states.secret}
-                  required={false}
-                  fieldName="secret"
-                  validationState={validatorStates.secret}
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <InputName
+                    inputState={states.secret}
+                    required={false}
+                    fieldName="secret"
+                    validationState={validatorStates.secret}
                   />
-              </Grid>
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <InputName
-                  inputState={states.baseurl}
-                  required={false}
-                  fieldName="baseurl"
-                  validationState={validatorStates.baseurl}
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <InputName
+                    inputState={states.baseurl}
+                    required={false}
+                    fieldName="baseurl"
+                    validationState={validatorStates.baseurl}
                   />
-              </Grid>
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <InputName
-                  inputState={states.sNumber}
-                  required={false}
-                  fieldName="sNumber"
-                  validationState={validatorStates.sNumber}
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <InputName
+                    inputState={states.sNumber}
+                    required={false}
+                    fieldName="sNumber"
+                    validationState={validatorStates.sNumber}
                   />
+                </Grid>
               </Grid>
-            </Grid>
-          </Box>
+            </Box>
           </Grid>
 
 
           <Grid item xs={12} sm={12} md={12} lg={12}>
-          <Typography variant="h4" sx={{
-            padding:"30px 20px 0 10px"
-          }}>Impresion</Typography>
-          <Box sx={{ 
-            display: "flex",
-            border: "1px solid dimgray",
-            backgroundColor:"#F7F7F7",
-            borderRadius:"3px",
-            marginLeft:"15px",
-            marginTop:"20px",
-            padding:"20px"
+            <Typography variant="h4" sx={{
+              padding: "30px 20px 0 10px"
+            }}>Impresion</Typography>
+            <Box sx={{
+              display: "flex",
+              border: "1px solid dimgray",
+              backgroundColor: "#F7F7F7",
+              borderRadius: "3px",
+              marginLeft: "15px",
+              marginTop: "20px",
+              padding: "20px"
             }}>
 
-            <Grid container spacing={2} sx={{ padding: "2%" }}>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-              <label onClick={()=>setDebeImprimir(!debeImprimir)}
-                style={{
-                  userSelect:"none"
-                }}>
-                  Imprimir
+              <Grid container spacing={2} sx={{ padding: "2%" }}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <label onClick={() => setDebeImprimir(!debeImprimir)}
+                    style={{
+                      userSelect: "none"
+                    }}>
+                    Imprimir
                   </label>
-              <input
-                  type="checkbox"
-                  checked={debeImprimir}
-                  onClick={(e) => setDebeImprimir(!debeImprimir)}
-                  onChange={()=>{}}
-                  style={{
-                    position:"relative",
-                    top:"4px",
-                    width:"50px",
-                    height:"20px"
-                  }}
+                  <input
+                    type="checkbox"
+                    checked={debeImprimir}
+                    onClick={(e) => setDebeImprimir(!debeImprimir)}
+                    onChange={() => { }}
+                    style={{
+                      position: "relative",
+                      top: "4px",
+                      width: "50px",
+                      height: "20px"
+                    }}
                   />
-              </Grid>
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <InputName
-                  inputState={states.nombreImpresora}
-                  required={false}
-                  fieldName="NombreImpresora"
-                  validationState={validatorStates.nombreImpresora}
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <InputName
+                    inputState={states.nombreImpresora}
+                    required={false}
+                    fieldName="NombreImpresora"
+                    validationState={validatorStates.nombreImpresora}
                   />
-              </Grid>
+                </Grid>
 
-            </Grid>
-          </Box>
+              </Grid>
+            </Box>
           </Grid>
 
 
@@ -320,7 +320,7 @@ export default function EditarCajaSucursal({
               validationState={validatorStates.tipoImpresion}
             />
           </Grid> */}
-          
+
           {/* <Grid item xs={12} md={6}sx={{marginBottom:"6px"}}>
             <SelectPasarela
               inputState={states.pasarela}
@@ -333,7 +333,7 @@ export default function EditarCajaSucursal({
             <br/>
             <br/>
           </Grid> */}
-         
+
 
           <SendingButton
             textButton="Guardar Caja"

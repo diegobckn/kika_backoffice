@@ -1,5 +1,5 @@
 class Singleton {
-    static instances = {};
+    static instances:any = {};
   
       static getInstance() {
           if (Singleton.instances[this.name] === undefined) {

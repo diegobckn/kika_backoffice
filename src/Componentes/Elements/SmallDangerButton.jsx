@@ -11,7 +11,7 @@ import ModelConfig from "../../Models/ModelConfig";
 
 const SmallDangerButton = ({ 
   textButton,
-  actionButton,
+  actionButton = ()=>{},
   style = {}
 }) => {
   const [disabled, setDisabled] = useState(false);

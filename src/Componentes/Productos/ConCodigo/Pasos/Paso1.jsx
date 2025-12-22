@@ -27,7 +27,7 @@ import ModelConfig from "../../../../Models/ModelConfig";
 import { SelectedOptionsContext } from "../../../Context/SelectedOptionsProvider";
 import ProductStepper from "../../../../Models/ProductStepper";
 import Product from "../../../../Models/Product";
-import { Check, Dangerous, Percent } from "@mui/icons-material";
+import { Check, Dangerous, LinkedCamera, Percent } from "@mui/icons-material";
 import Model from "../../../../Models/Model";
 import InputCodigoBarras from "../../../Elements/Compuestos/InputCodigoBarras";
 import SelectFetchDependiente from "../../../Elements/Compuestos/SelectFetchDependiente";
@@ -39,6 +39,7 @@ import FormCategoria from "../../FormCategoria";
 import FormSubCategoria from "../../FormSubCategoria";
 import FormFamilia from "../../FormFamilia";
 import FormSubFamilia from "../../FormSubFamilia";
+import StockMobileQR from "../../../../Pages/StockMobileQR";
 
 const Step1CC = ({
   onNext = () => { },
@@ -129,6 +130,7 @@ const Step1CC = ({
   const [refreshFamilies, setRefreshFamilies] = useState(null)
   const [refreshSubFamilies, setRefreshSubFamilies] = useState(null)
 
+  const [showCapturarCodigoBarras, setShowCapturarCodigoBarras] = useState(false)
 
 
   const cargaAnteriorDeSesion = async (funSet, propiedad) => {
@@ -181,6 +183,45 @@ const Step1CC = ({
             fieldName="codigoBarras"
             required={true}
           />
+
+
+          {System.isMobile() && (
+            <>
+              <Button
+                size="large"
+                variant="outlined"
+                style={{
+                  margin: "10px 0",
+                  padding: "14px",
+                  width: "100%",
+                }}
+
+                onClick={() => {
+                  console.log("asd")
+                  setShowCapturarCodigoBarras(true)
+                }}
+              >
+
+                <LinkedCamera sx={{
+                  left: "-5px",
+                  top: "-2px",
+                  position: "relative"
+                }} />
+                Capturar código
+              </Button>
+
+              <StockMobileQR
+                openDialog={showCapturarCodigoBarras}
+                setOpenDialog={setShowCapturarCodigoBarras}
+                onCapture={(info) => {
+                  setCodigoBarras(info)
+                }}
+              />
+
+            </>
+          )}
+
+
         </Grid>
 
         <Grid item xs={12} md={6}>

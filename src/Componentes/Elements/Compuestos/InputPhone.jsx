@@ -10,6 +10,7 @@ import ModelConfig from "../../../Models/ModelConfig";
 import { Check, Dangerous } from "@mui/icons-material";
 import User from "../../../Models/User";
 import Validator from "../../../Helpers/Validator";
+import System from "../../../Helpers/System";
 
 
 const InputPhone = ({
@@ -78,6 +79,10 @@ const InputPhone = ({
   }
 
   const checkKeyDown = (event) => {
+    if (System.isMobile()) {
+      setKeyPressed(true)
+      return
+    }
     if (!canAutoComplete && event.key == "Unidentified") {
       event.preventDefault();
       return false
@@ -127,7 +132,7 @@ const InputPhone = ({
         autoFocus={autoFocus}
         margin="normal"
         required={required}
-        type="phone"
+        type="number"
         label={label}
         value={phone}
         onChange={checkChange}

@@ -11,6 +11,7 @@ import ModelConfig from "../../../Models/ModelConfig";
 import { Check, Dangerous, Visibility, VisibilityOff } from "@mui/icons-material";
 import User from "../../../Models/User";
 import Validator from "../../../Helpers/Validator";
+import System from "../../../Helpers/System";
 
 
 const InputPassword = ({
@@ -76,6 +77,10 @@ const InputPassword = ({
   }
 
   const checkKeyDown = (event) => {
+    if (System.isMobile()) {
+      setKeyPressed(true)
+      return
+    }
     if (!canAutoComplete && event.key == "Unidentified") {
       event.preventDefault();
       return false
@@ -95,7 +100,7 @@ const InputPassword = ({
     }
 
     // console.log("event.nativeEvent.inputType", event.nativeEvent.inputType)
-    if(
+    if (
       event.nativeEvent.inputType != 'insertText'
       && event.nativeEvent.inputType != 'deleteContentBackward'
     ) return
@@ -145,7 +150,6 @@ const InputPassword = ({
         autoFocus={autoFocus}
         required={required}
         label={label}
-        password="clave"
         type={showPassword ? 'text' : 'password'}
         value={password}
         onChange={checkChange}

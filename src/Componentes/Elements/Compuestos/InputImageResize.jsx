@@ -15,12 +15,16 @@ import User from "../../../Models/User";
 import Validator from "../../../Helpers/Validator";
 import StorageSesion from "../../../Helpers/StorageSesion";
 import Shop from "../../../Models/Shop";
-import InputFile from "../Compuestos/InputFile";
+import InputFile from "./InputFile";
+import Product from "../../../Models/Product";
+import InputFileImageResize from "./InputFileImageResize";
+import System from "../../../Helpers/System";
 
 
-const PropertyImage = ({
+export default ({
   topic,
-  unique
+  unique,
+  product = null
 }) => {
 
   const {
@@ -35,58 +39,60 @@ const PropertyImage = ({
   const [image, setImage] = useState("")
   const [val_image, setVal_image] = useState(null)
 
-  const [infoComercio, setInfoComercio] = useState(null)
+  const [imageResize, setImageResize] = useState("")
+  const [val_image_resize, setVal_image_resize] = useState(null)
+
 
   useEffect(() => {
-    var comSes = new StorageSesion("comercio")
-    if (comSes.hasOne()) {
-      setInfoComercio(comSes.cargar(1))
-    }
+    cargarImagen()
   }, [])
-
-
-  useEffect(() => {
-    if (infoComercio) {
-      // console.log("cambio info comercio", infoComercio)
-      // if (isEdit) {
-      cargarImagen()
-      // }
-    }
-  }, [infoComercio])
 
   useEffect(() => {
     // console.log("cambio imagen", image)
     if (typeof (image) == "object" && image) {
       // console.log("actuaizar imagen")
       enviarImagen()
+    } else if (image === null) {
+      cargarImagen()
     }
     // console.log("tipo de imagen", typeof (image))
   }, [image])
 
 
 
-  const eliminarImagen = () => {
-    showLoading("Eliminando imagen")
-    Shop.eliminarImagenProperty(topic, unique, infoComercio, (resp) => {
-      // console.log("respuesta del servidor", resp)
-      if (resp.status) {
-        setImage(resp.info.value)
-      }
+  useEffect(() => {
+    console.log("cambio imagenresize", imageResize)
+    if (typeof (imageResize) == "object" && imageResize) {
+      // console.log("actuaizar imagen")
+      enviarImagenResize()
+    } else if (imageResize === null) {
+      console.log("es null")
+      // cargarImagen()
+    }
+    // console.log("tipo de imagen", typeof (image))
+  }, [imageResize])
+
+
+
+
+  const enviarImagen = () => {
+    // console.log("enviarImagen")
+    showLoading("Subiendo imagen")
+    Product.signarImagen(product, image, (resp) => {
       hideLoading()
+      cargarImagen()
     }, (er) => {
       hideLoading()
       showMessage(er)
     })
   }
 
-  const enviarImagen = () => {
-    showLoading("Subiendo imagen")
-    Shop.enviarImagenProperty(topic, unique, image, infoComercio, (resp) => {
-      // console.log("respuesta del servidor", resp)
-      if (resp.status) {
-        setImage(resp.info.value)
-      }
+  const enviarImagenResize = () => {
+    // console.log("enviarImagen")
+    showLoading("Subiendo imagen para achicar")
+    Product.signarImagenResize(product, imageResize, (resp) => {
       hideLoading()
+      cargarImagen()
     }, (er) => {
       hideLoading()
       showMessage(er)
@@ -95,20 +101,17 @@ const PropertyImage = ({
 
   const cargarImagen = () => {
     showLoading("Cargando imagen")
-    Shop.getProperty(topic, unique, "image", infoComercio, (resp) => {
-      // console.log("respuesta del servidor", resp)
-      setImage(resp.info)
+    Product.cargarImagen(product, (urlImagen) => {
+      setImage(urlImagen)
       hideLoading()
-    }, (er) => {
-      hideLoading()
-      showMessage(er)
     })
   }
 
 
-  return infoComercio ? (<div style={{
+  return <div style={{
     padding: "10px",
     backgroundColor: "#f0f0f0",
+    textAlign: (System.isMobile() ? "center" : undefined)
   }}>
     <h5>Imagen</h5>
     {image != "" && (typeof (image) == "string") && (
@@ -116,24 +119,27 @@ const PropertyImage = ({
         style={{
           width: "130px"
         }}
-        src={("https://softus.com.ar/images/properties/" + image)} />
+        src={image}
+      />
     )}
     <br />
     <InputFile
       inputState={[image, setImage]}
       validationState={[val_image, setVal_image]}
-      extensions="jpg,jpeg,png,webp"
+      extensions="jpg"
       withLabel={false}
       fileInputLabel={(image != "" ? "cambiar imagen" : "seleccionar imagen")}
-      onDelete={() => {
-        // console.log("debe eliminar imagen")
-        eliminarImagen()
-      }}
+      canDelete={false}
+    />
+
+    <InputFileImageResize
+      inputState={[imageResize, setImageResize]}
+      validationState={[val_image_resize, setVal_image_resize]}
+      extensions="jpg,jpeg"
+      withLabel={false}
+      fileInputLabel={(image != "" ? "cambiar y achicar imagen" : "seleccionar y achicar imagen")}
+      canDelete={false}
     />
   </div>
-  ) : (
-    <></>
-  );
 };
 
-export default PropertyImage;

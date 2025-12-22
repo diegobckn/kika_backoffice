@@ -8,13 +8,13 @@ import axios from 'axios';
 class ModelSingleton {
   sesion: StorageSesion;
 
-  static instances = {};
+  static instances:any = {};
 
   constructor() {
     this.sesion = new StorageSesion(eval("this.__proto__.constructor.name"));
   }
 
-  fill(values) {
+  fill(values:any) {
     for (var campo in values) {
       const valor = values[campo]
       this[campo] = valor;

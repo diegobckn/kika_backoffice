@@ -7,9 +7,10 @@ import Button from "@mui/material/Button";
 import Add from "@mui/icons-material/Add";
 import Modal from "@mui/joy/Modal";
 import SearchListProducts from "../Componentes/Productos/SearchListProduct";
-import { HorizontalSplit } from "@mui/icons-material";
+import { HorizontalSplit, LabelImportantOutlined } from "@mui/icons-material";
 import CrearProductosSinCodigo from "../Componentes/Productos/SinCodigo/Crear";
 import CrearProductosConCodigo from "../Componentes/Productos/ConCodigo/Crear";
+import ImprimirEtiquetas from "../Componentes/Productos/ImprimirEtiquetas";
 
 const Productos = () => {
 
@@ -19,6 +20,8 @@ const Productos = () => {
   const [open, setOpen] = useState(false);
 
   const [open2, setOpen2] = useState(false);
+
+  const [showImpEtiquetas, setShowImpEtiquetas] = useState(false);
 
   const handleOpenStepper = () => {
     setOpen(true);
@@ -62,6 +65,19 @@ const Productos = () => {
             left: "-7px"
           }} />
           Producto con código
+        </Button>
+        <Button
+          size="large"
+          variant="outlined"
+          style={{ marginLeft: "18px", padding: "14px", marginTop: "6px" }}
+          onClick={() => setShowImpEtiquetas(true)}
+        >
+          <LabelImportantOutlined sx={{
+            width: "15px",
+            position: "relative",
+            left: "-7px"
+          }} />
+          Imprimir Etiquetas
         </Button>
 
         <SearchListProducts
@@ -117,6 +133,12 @@ const Productos = () => {
           <CrearProductosConCodigo onSuccessAdd={() => { setRefresh(!refresh) }} />
         </Box>
       </Modal>
+
+      <ImprimirEtiquetas
+        openDialog={showImpEtiquetas}
+        setOpenDialog={setShowImpEtiquetas}
+      />
+
     </div>
   );
 };

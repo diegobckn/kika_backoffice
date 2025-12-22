@@ -57,53 +57,40 @@ const PropertyCheck = ({
 
   useEffect(() => {
     if (infoComercio) {
-      // console.log("cambio info comercio", infoComercio)
-      // if (isEdit) {
       cargarPropiedad()
-      // }
     }
   }, [infoComercio])
 
 
   const actualizarPropiedad = (valor) => {
-    // console.log("actualizarPropiedad " + name, "valor", valor)
-    // showLoading("Cargando imagen")
     Shop.updateProperty(topic, unique, name, valor, infoComercio, (resp) => {
-      // console.log("respuesta del servidor", resp)
       if (resp.info != "") {
         setValueProperty(JSON.parse(resp.info))
       }
-      // hideLoading()
     }, (er) => {
-      // hideLoading()
       showMessage(er)
     })
   }
 
   const cargarPropiedad = () => {
-    // showLoading("Cargando imagen")
     Shop.getProperty(topic, unique, name, infoComercio, (resp) => {
-      // console.log("respuesta del servidor", resp)
       if (resp.info != "") {
-        setValueProperty(JSON.parse(resp.info))
+        const decoded = (JSON.parse(resp.info))
+        setValueProperty(decoded)
       }
-      // hideLoading()
     }, (er) => {
-      // hideLoading()
       showMessage(er)
     })
   }
 
-
   useEffect(() => {
     if (valueProperty != null) {
-      // console.log("cambio", valueProperty)
-      // console.log("type cambio", typeof (valueProperty))
       actualizarPropiedad(valueProperty)
     }
   }, [valueProperty])
 
   const changeCheck = () => {
+    // console.log("changeCheck")
     if (valueProperty === null) {
       setValueProperty(true)
       return
@@ -114,19 +101,13 @@ const PropertyCheck = ({
 
   return infoComercio ? (<div style={{
     padding: "10px",
-    // backgroundColor: "#f0f0f0",
   }}>
-    {/* <InputName
-      onRef={cambiaRef}
-      label={label}
-      inputState={[valueProperty, setValueProperty]}
-      validationState={[val_valueProperty, setVal_valueProperty]}
-    /> */}
+
 
     <label>
       {label}
       <input
-        checked={valueProperty}
+        checked={valueProperty != undefined ? valueProperty : false}
         onChange={changeCheck}
         type="checkbox"
         style={{
