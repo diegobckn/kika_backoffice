@@ -41,6 +41,10 @@ import SmallButton from "../Componentes/Elements/SmallButton";
 import InputName from "../Componentes/Elements/Compuestos/InputName";
 import SmallSuccessButton from "../Componentes/Elements/SmallSuccessButton";
 import SmallDangerButton from "../Componentes/Elements/SmallDangerButton";
+import SelectSucursal from "../Componentes/Elements/Compuestos/SelectSucursal";
+import SelectCaja from "../Componentes/Elements/Compuestos/SelectCaja";
+
+const SELECCIONAR_TODOS = -1
 
 const RankingLibroVentas = () => {
 
@@ -75,8 +79,6 @@ const RankingLibroVentas = () => {
   const [totalIVACaja, setTotalIVACaja] = useState(0);
   const [cantidadCaja, setCantidadCaja] = useState(0);
 
-  const [cajas, setCajas] = useState([]);
-  const [cajaSel, setCajaSel] = useState(null);
   const [users, setUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [userSel, setUserSel] = useState(null);
@@ -84,10 +86,15 @@ const RankingLibroVentas = () => {
 
   const [nroFolio, setNroFolio] = useState("");
 
+  const [codigoSucursal, setCodigoSucursal] = useState(SELECCIONAR_TODOS)
+  const [sucursalInfo, setSucursalInfo] = useState(null)
+  const [codigoCaja, setCodigoCaja] = useState(SELECCIONAR_TODOS)
+
+  const [sucursalesFiltrar, setSucursalesFiltrar] = useState([])
+  const [cajasFiltrar, setCajasFiltrar] = useState([])
+
   const exportExcel = () => {
-
     showLoading("Preparando excel...")
-
     const cabeceraArray = [];
     const detallesArray = [];
     const pagosArray = [];
@@ -172,14 +179,26 @@ const RankingLibroVentas = () => {
       setCantidad(response.data.cantidad);
 
       if (response.data.cantidad > 0 && response.data.ventaCabeceraReportes) {
-        setData(response.data.ventaCabeceraReportes);
-        // console.log("Datos recibidos:", response.data.ventaCabeceraReportes);
+        const infoServer = response.data.ventaCabeceraReportes
+        setData(infoServer);
 
-        const totalValue = response.data.ventaCabeceraReportes.reduce(
+        var sucursalesVentas = []
+        var cajasVentas = []
+
+        infoServer.forEach((infoItem) => {
+          sucursalesVentas[infoItem.codigoSucursal] = 1
+          cajasVentas[infoItem.puntoVenta.trim()] = 1
+        })
+
+        setSucursalesFiltrar(Object.keys(sucursalesVentas))
+        setCajasFiltrar(Object.keys(cajasVentas))
+        // console.log("Datos recibidos:", infoServer);
+
+        const totalValue = infoServer.reduce(
           (sum, item) => sum + item.total,
           0
         );
-        const totalIVA = response.data.ventaCabeceraReportes
+        const totalIVA = infoServer
           // .filter((item) => item.tipoComprobante !== 0)
           .reduce((sum, item) => sum + item.montoIVA, 0);
 
@@ -188,6 +207,7 @@ const RankingLibroVentas = () => {
         );
         setTotalValues(totalValue);
         setTotalIVA(totalIVA);
+
       } else {
         setData([]);
         setSnackbarMessage("No se encontraron resultados.");
@@ -196,7 +216,6 @@ const RankingLibroVentas = () => {
       }
 
       setVentaPorCaja([])
-      setCajaSel(null)
       setUserSel(null)
 
       setLoading(false);
@@ -286,7 +305,7 @@ const RankingLibroVentas = () => {
 
 
   const agruparPorCaja = () => {
-    console.log("agruparPorCaja")
+    // console.log("agruparPorCaja")
     var usersx = []
     var prodCaja = []
     data.forEach((prod) => {
@@ -307,46 +326,43 @@ const RankingLibroVentas = () => {
     prodCaja.push("Todas")
     usersx.push("Todos")
 
-    setCajas(prodCaja)
     setUsers(usersx)
-    console.log("usersx", usersx)
+    // console.log("usersx", usersx)
     // console.log("cajas", prodCaja)
   }
 
-  const cargarVentasPorCaja = (caja) => {
-    var ventas = []
-    var cantCaja = 0
-    var totCaja = 0
-    var totIvaCaja = 0
-
-    data.forEach((venta) => {
-      if (venta.puntoVenta == caja || caja == "Todas") {
-        ventas.push(venta)
-
-        cantCaja++
-        totCaja += venta.total
-        totIvaCaja += venta.montoIVA
-      }
-    })
-    setVentaPorCaja(ventas)
-    setCantidadCaja(cantCaja)
-    setTotalValuesCaja(totCaja)
-    setTotalIVACaja(totIvaCaja)
+  const buscarNombreCajaPorId = (idCaja) => {
+    var found = ""
+    if (sucursalInfo) {
+      sucursalInfo.puntoVenta.forEach((sucInfo) => {
+        if (sucInfo.idCaja == idCaja) {
+          found = sucInfo.sPuntoVenta
+        }
+      })
+    }
+    return found
   }
 
-
-
   const cargarVentasPorUsuarioYCaja = () => {
-    console.log("cargarVentasPorUsuarioYCaja")
+    // console.log("cargarVentasPorUsuarioYCaja")
+    // console.log("codigoSucursal", codigoSucursal)
+    // console.log("codigoCaja", codigoCaja)
+    const nombreCaja = buscarNombreCajaPorId(codigoCaja).trim()
+    // console.log("nombreCaja", nombreCaja)
+    // console.log("data", data)
     var ventas = []
     var cantCaja = 0
     var totCaja = 0
     var totIvaCaja = 0
 
     var ventasIds = []
+    showLoading("Filtrando...")
     System.clone(data).forEach((venta, keyIdUnico) => {
+      const cajaNombreItem = venta.puntoVenta.trim().toLowerCase()
+      const codigoSucursalItem = parseInt(venta.codigoSucursal)
       if (
-        (venta.puntoVenta == cajas[cajaSel] || cajas[cajaSel] == "Todas")
+        (codigoCaja == SELECCIONAR_TODOS || nombreCaja == cajaNombreItem)
+        && (codigoSucursal == SELECCIONAR_TODOS || codigoSucursal == codigoSucursalItem)
       ) {
         const infoUser = getUserInfo(venta.idUsuario)
         const userName = infoUser ? infoUser.nombres + " " + infoUser.apellidos : ""
@@ -398,11 +414,52 @@ const RankingLibroVentas = () => {
         }
       }
     })
+
+    hideLoading()
     setVentaPorCaja(ventas)
-    console.log("las ventas quedaron asi", ventas)
+    // console.log("las ventas quedaron asi", ventas)
     setCantidadCaja(cantCaja)
     setTotalValuesCaja(totCaja)
     setTotalIVACaja(totIvaCaja)
+  }
+
+
+  const colorRespuestaSii = (respuesta) => {
+    var resp = respuesta + ""
+    resp = resp.toLowerCase()
+    resp = resp.replaceAll("á", "a")
+    resp = resp.replaceAll("é", "e")
+    resp = resp.replaceAll("í", "i")
+    resp = resp.replaceAll("ó", "o")
+    resp = resp.replaceAll("ú", "u")
+
+    switch (resp) {
+      case "envio procesado":
+        return "#089629"
+        break;
+      case "envio en proceso":
+        return "#D9F100"
+        break;
+      case "rechazado por error en schema":
+        return "#F10000"
+        break;
+
+      default:
+        return "#696363"
+    }
+  }
+
+  const prepararRespuestaSii = (respuesta) => {
+    var resp = respuesta + ""
+    resp = resp.toLowerCase()
+    resp = resp.replaceAll("á", "a")
+    resp = resp.replaceAll("é", "e")
+    resp = resp.replaceAll("í", "i")
+    resp = resp.replaceAll("ó", "o")
+    resp = resp.replaceAll("ú", "u")
+
+    resp = resp.replace("envio", "")
+    return resp
   }
 
   useEffect(() => {
@@ -425,7 +482,13 @@ const RankingLibroVentas = () => {
 
   useEffect(() => {
     cargarVentasPorUsuarioYCaja()
-  }, [userSel, cajaSel])
+  }, [userSel, codigoSucursal, codigoCaja])
+
+  // useEffect(() => {
+  //   console.log("cambio codigoSucursal o codigoCaja")
+  //   console.log("codigoSucursal", codigoSucursal)
+  //   console.log("codigoCaja", codigoCaja)
+  // }, [codigoSucursal, codigoCaja])
 
   return (
     <div style={{ display: "flex" }}>
@@ -532,85 +595,115 @@ const RankingLibroVentas = () => {
             // backgroundColor:"red"
           }}>
 
-            <Grid item xs={12} sm={12} md={4} lg={4}>
-              <p>Total Valores: ${totalValues.toLocaleString("es-CL")}</p>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4}>
-              <p>Total IVA: ${totalIVA.toLocaleString("es-CL")}</p>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4}>
-              <p>Cantidad Encontrados: {cantidad.toLocaleString("es-CL")}</p>
-            </Grid>
+
+            {data.length > 0 && (
+              <>
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                  <p>Total Valores: ${System.formatMonedaLocal(totalValues, false)}</p>
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                  <p>Total IVA: ${System.formatMonedaLocal(totalIVA, false)}</p>
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                  <p>Cantidad Encontrados: {cantidad}</p>
+                </Grid>
 
 
-            <Grid item xs={12} sm={12} md={2} lg={2}>
-              <Typography>Seleccionar caja</Typography>
-            </Grid>
-            <Grid item xs={12} sm={12} md={10} lg={10}>
-              <BoxSelectList
-                listValues={cajas}
-                selected={cajaSel}
-                setSelected={(sel) => {
-                  setCajaSel(sel)
-                }}
-              />
-            </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <SelectSucursal
+                    withLabel={false}
+                    inputState={[codigoSucursal, setCodigoSucursal]}
+                    label="Sucursal"
+                    labelEmpty="Todas"
+                    setSucursalSelected={(sel) => {
+                      // console.log("sel ", sel)
+                      // console.log("cajasFiltrar ", cajasFiltrar)
+                      if (sel) {
+                        var permitidas = []
+                        sel.puntoVenta.forEach((selCajaItem) => {
+                          if (cajasFiltrar.includes(selCajaItem.sPuntoVenta.trim().toLowerCase())) {
+                            permitidas.push(selCajaItem)
+                          }
+                        })
+                        setSucursalInfo({
+                          puntoVenta: permitidas
+                        })
+                      } else {
+                        setSucursalInfo({
+                          puntoVenta: []
+                        })
+                      }
+                      setCodigoCaja(-1)
+                    }}
 
-            <Grid item xs={12} sm={12} md={2} lg={2}>
-              <Typography>Seleccionar usuario</Typography>
-            </Grid>
-            <Grid item xs={12} sm={12} md={10} lg={10}>
-              <BoxSelectList
-                listValues={users}
-                selected={userSel}
-                setSelected={(sel) => {
-                  setUserSel(sel)
-                }}
-              />
-            </Grid>
+                    onlyIds={sucursalesFiltrar}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6}>
+                  <SelectCaja
+                    withLabel={false}
+                    sucursalInfo={sucursalInfo}
+                    inputState={[codigoCaja, setCodigoCaja]}
+                    label="Caja"
+                    labelEmpty="Todas"
+                  />
+                </Grid>
 
-            <Grid container spacing={1} alignItems="center">
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <br />
-                <Typography>Filtrar</Typography>
-              </Grid>
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <InputName
-                  inputState={[nroFolio, setNroFolio]}
-                  label={"nro folio"}
-                  onEnter={filtrar}
-                  withLabel={false}
-                />
+                <Grid item xs={12} sm={12} md={2} lg={2}>
+                  <Typography>Seleccionar usuario</Typography>
+                </Grid>
+                <Grid item xs={12} sm={12} md={10} lg={10}>
+                  <BoxSelectList
+                    listValues={users}
+                    selected={userSel}
+                    setSelected={(sel) => {
+                      setUserSel(sel)
+                    }}
+                  />
+                </Grid>
 
-              </Grid>
-              <Grid item xs={12} sm={12} md={6} lg={6}>
-                <SmallSuccessButton
-                  textButton={"Filtrar"}
-                  actionButton={filtrar}
-                  style={{
-                    marginTop: "12px",
-                    height: "50px"
-                  }}
-                />
-              </Grid>
-            </Grid>
+                <Grid container spacing={1} alignItems="center">
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <br />
+                    <Typography>Filtrar</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                    <InputName
+                      inputState={[nroFolio, setNroFolio]}
+                      label={"nro folio"}
+                      onEnter={filtrar}
+                      withLabel={false}
+                    />
+
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={6} lg={6}>
+                    <SmallSuccessButton
+                      textButton={"Filtrar"}
+                      actionButton={filtrar}
+                      style={{
+                        marginTop: "12px",
+                        height: "50px"
+                      }}
+                    />
+                  </Grid>
+                </Grid>
 
 
-            <Grid item xs={12} sm={12} md={4} lg={4}>
-              <p>Total en caja: ${totalValuesCaja.toLocaleString("es-CL")}</p>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4}>
-              <p>Total IVA en caja: ${totalIVACaja.toLocaleString("es-CL")}</p>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4}>
-              <p>Cantidad de la caja: {cantidadCaja.toLocaleString("es-CL")}</p>
-            </Grid>
-
-
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                  <p>Total en caja: ${totalValuesCaja.toLocaleString("es-CL")}</p>
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                  <p>Total IVA en caja: ${totalIVACaja.toLocaleString("es-CL")}</p>
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                  <p>Cantidad de la caja: {cantidadCaja.toLocaleString("es-CL")}</p>
+                </Grid>
+              </>)}
           </Grid>
 
 
         </Grid>
+
         {loading ? (
           <CircularProgress />
         ) : cantidad === 0 ? (
@@ -626,6 +719,7 @@ const RankingLibroVentas = () => {
                   <TableCell>Valor Neto</TableCell>
                   <TableCell>IVA DF</TableCell>
                   <TableCell>Total</TableCell>
+                  <TableCell>SII</TableCell>
                   <TableCell>Acciones
 
                     {ventasPorCaja.length > 0 && (
@@ -665,6 +759,34 @@ const RankingLibroVentas = () => {
                       {producto.total.toLocaleString("es-CL")}
                     </TableCell>
                     <TableCell>
+                      {(
+                        producto.descripcionComprobante == "Factura"
+                        || producto.descripcionComprobante == "Boleta"
+                      ) && (
+                          producto.siiEnvio ? (
+                            <Typography sx={{
+                              backgroundColor: colorRespuestaSii(producto.siiEnvioRespuesta),
+                              padding: "10px",
+                              borderRadius: "4px",
+                              color: "white"
+                            }}>
+                              Enviado  y<br />
+                              {producto.siiEnvioRespuesta == "" ? "Sin respuesta" : prepararRespuestaSii(producto.siiEnvioRespuesta)}
+                            </Typography>
+                          ) : (
+                            <Typography sx={{
+                              backgroundColor: "#FE4102",
+                              padding: "10px",
+                              borderRadius: "4px",
+                              color: "white"
+                            }}>
+                              No enviado
+                            </Typography>
+                          )
+                        )}
+
+                    </TableCell>
+                    <TableCell>
                       <Button
                         variant="contained"
                         color="secondary"
@@ -697,7 +819,7 @@ const RankingLibroVentas = () => {
         handleBorradoLogico={handleBorradoLogico}
         selectedProduct={selectedProduct}
       />
-    </div>
+    </div >
   );
 };
 

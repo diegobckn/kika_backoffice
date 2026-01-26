@@ -301,7 +301,8 @@ export default () => {
                 total: selectedItem.total.toString(),
               },
             ],
-            montoPagado: montoAPagar,
+            // montoPagado: montoAPagar,
+            montoPagado: cantidadPagada,
             metodoPago: metodoPago,
             idUsuario: 0,
             // Add cash-specific fields here if needed
@@ -1184,9 +1185,9 @@ export default () => {
                         <TableRow key={detalle.codProducto}>
                           <TableCell>{detalle.descripcionProducto}</TableCell>
                           <TableCell>{detalle.cantidad}</TableCell>
-                          <TableCell>${System.formatMonedaLocal(detalle.precioUnidad,false)}</TableCell>
-                          <TableCell>${System.formatMonedaLocal(detalle.costo,false)}</TableCell>
-                          <TableCell>${System.formatMonedaLocal(detalle.cantidad * detalle.precioUnidad,false)}</TableCell>
+                          <TableCell>${System.formatMonedaLocal(detalle.precioUnidad, false)}</TableCell>
+                          <TableCell>${System.formatMonedaLocal(detalle.costo, false)}</TableCell>
+                          <TableCell>${System.formatMonedaLocal(detalle.cantidad * detalle.precioUnidad, false)}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -1207,7 +1208,7 @@ export default () => {
                   // onClick={handleOpenPaymentProcess}
                   onClick={() => handleOpenPaymentProcess()}
                 >
-                  Pagar Total $ ({selectedItem.total})
+                  Pagar $ {System.formatMonedaLocal(selectedItem.total, false)}
                 </Button>
               </Box>
             </div>
@@ -1476,84 +1477,25 @@ export default () => {
       </Dialog>
 
 
-      <Dialog open={openPaymentProcess} onClose={handleClosePaymentProcess}>
+      <Dialog open={openPaymentProcess} onClose={handleClosePaymentProcess} maxWidth={"lg"} fullWidth>
         <DialogTitle>Procesamiento de Pago Detalle</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} item xs={12} md={6} lg={12}>
-            <Grid item xs={12} md={12} lg={12}>
-              {error && (
-                <Grid item xs={12}>
-                  <Typography variant="body1" color="error">
-                    {error}
-                  </Typography>
-                </Grid>
-              )}
-              <TextField
-                sx={{ marginBottom: "5%" }}
-                margin="dense"
-                label="Monto a Pagar"
-                variant="outlined"
-                // value={getTotalSelected()}
-                value={montoAPagar.toLocaleString("es-CL")}
-                fullWidth
-                inputProps={{
-                  inputMode: "numeric",
-                  pattern: "[0-9]*",
-                }}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                margin="dense"
-                fullWidth
-                label="Cantidad pagada"
-                value={cantidadPagada.toLocaleString("es-CL")}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (!value.trim()) {
-                    setCantidadPagada(0);
-                  } else {
-                    setCantidadPagada(parseFloat(value));
-                  }
-                }}
-                disabled={metodoPago !== "EFECTIVO"} // Deshabilitar la edición excepto para el método "EFECTIVO"
-                inputProps={{
-                  inputMode: "numeric",
-                  pattern: "[0-9]*",
-                  maxLength: 9,
-                }}
-              />
-              <TextField
-                margin="dense"
-                fullWidth
-                type="number"
-                label="Por pagar"
-                value={Math.max(0, montoAPagar - cantidadPagada).toLocaleString(
-                  "es-CL"
-                )}
-                InputProps={{ readOnly: true }}
-              />
-              {calcularVuelto() > 0 && (
-                <TextField
-                  margin="dense"
-                  fullWidth
-                  type="number"
-                  label="Vuelto"
-                  value={calcularVuelto()}
-                  InputProps={{ readOnly: true }}
-                />
-              )}
-            </Grid>
+
+          <Grid container spacing={2} item xs={12} sm={12} md={12} lg={12}>
 
             <Grid
               container
               spacing={2}
               item
+              xs={12}
               sm={12}
-              md={12}
-              lg={12}
+              md={6}
+              lg={6}
               sx={{ width: "100%", display: "flex", justifyContent: "center" }}
             >
-              <Typography sx={{ marginTop: "7%" }} variant="h6">
+              <Typography sx={{
+                marginTop: "10px"
+              }} variant="h6">
                 Selecciona Método de Pago:
               </Typography>
               <Grid item xs={12} sm={12} md={12}>
@@ -1610,26 +1552,115 @@ export default () => {
                   Transferencia
                 </Button>
               </Grid>
-              <Grid item xs={12} sm={12}>
-                <Button
-                  sx={{ height: "100%" }}
-                  variant="contained"
+
+            </Grid>
+
+
+            <Grid
+              container
+              spacing={2}
+              item
+              xs={12}
+              sm={12}
+              md={6}
+              lg={6}
+              sx={{ width: "100%", display: "flex", justifyContent: "center" }}
+            >
+              <Grid item xs={12} sm={12} md={6} lg={6}>
+                {error && (
+                  <Grid item xs={12}>
+                    <Typography variant="body1" color="error">
+                      {error}
+                    </Typography>
+                  </Grid>
+                )}
+                <Typography sx={{
+                  marginTop: "10px"
+                }} variant="h6">
+                  Ingrese el monto a pagar
+                </Typography>
+                <TextField
+                  sx={{
+                    marginBottom: "5%",
+                    marginTop: "16px",
+                  }}
+                  margin="dense"
+                  label="Monto a Pagar"
+                  variant="outlined"
+                  // value={getTotalSelected()}
+                  value={montoAPagar.toLocaleString("es-CL")}
                   fullWidth
-                  color="secondary"
-                  disabled={!metodoPago || loading}
-                  // onClick={handlePayment}
-                  onClick={handleIndividualPayment}
-                >
-                  {loading ? (
-                    <>
-                      <CircularProgress size={20} /> Procesando...
-                    </>
-                  ) : (
-                    "Pagar"
+                  inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                  }}
+                  InputProps={{ readOnly: true }}
+                />
+                <TextField
+                  margin="dense"
+                  fullWidth
+                  label="Cantidad pagada"
+                  value={cantidadPagada.toLocaleString("es-CL")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (!value.trim()) {
+                      setCantidadPagada(0);
+                    } else {
+                      setCantidadPagada(parseFloat(value));
+                    }
+                  }}
+                  disabled={metodoPago !== "EFECTIVO"} // Deshabilitar la edición excepto para el método "EFECTIVO"
+                  inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    maxLength: 9,
+                  }}
+                />
+                <TextField
+                  margin="dense"
+                  fullWidth
+                  type="number"
+                  label="Por pagar"
+                  value={Math.max(0, montoAPagar - cantidadPagada).toLocaleString(
+                    "es-CL"
                   )}
-                </Button>
+                  InputProps={{ readOnly: true }}
+                />
+                {calcularVuelto() > 0 && (
+                  <TextField
+                    margin="dense"
+                    fullWidth
+                    type="number"
+                    label="Vuelto"
+                    value={calcularVuelto()}
+                    InputProps={{ readOnly: true }}
+                  />
+                )}
               </Grid>
             </Grid>
+
+
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+              <Button
+                sx={{ height: "100%" }}
+                variant="contained"
+                fullWidth
+                color="secondary"
+                disabled={!metodoPago || loading}
+                // onClick={handlePayment}
+                onClick={handleIndividualPayment}
+              >
+                {loading ? (
+                  <>
+                    <CircularProgress size={20} /> Procesando...
+                  </>
+                ) : (
+                  "Pagar"
+                )}
+              </Button>
+            </Grid>
+
+
           </Grid>
         </DialogContent>
         <DialogActions>

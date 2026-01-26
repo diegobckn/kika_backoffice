@@ -1,6 +1,7 @@
 import axios from 'axios';
 import StorageSesion from '../Helpers/StorageSesion.ts';
 import BaseConfig from "../definitions/BaseConfig";
+import EndPoint from './EndPoint.ts';
 
 
 class ModelConfig {
@@ -40,7 +41,7 @@ class ModelConfig {
         return rs;
     }
 
-    static getValueOrDefault(name:string) {
+    static getValueOrDefault(name: string) {
         const all = ModelConfig.get()
 
         if (all[name] == undefined) {
@@ -54,7 +55,7 @@ class ModelConfig {
         }
     }
 
-    static change(propName:string, propValue:any) {
+    static change(propName: string, propValue: any) {
         var all = ModelConfig.get();
         all[propName] = propValue;
         ModelConfig.getInstance().sesion.guardar(all);
@@ -72,26 +73,19 @@ class ModelConfig {
     }
 
 
-    static async getAllComercio(callbackOk:any, callbackWrong:any) {
-        try {
-            const configs = ModelConfig.get()
-            var url = configs.urlBase
+    static async getAllComercio(callbackOk: any, callbackWrong: any) {
+        const configs = ModelConfig.get()
+        var url = configs.urlBase
 
-            url += "/Configuracion/GetAllConfiguracionCliente"
+        url += "/Configuracion/GetAllConfiguracionCliente"
 
-            const response = await axios.get(url);
-            if (response.data.statusCode === 200) {
-                // Restablecer estados y cerrar diálogos después de realizar el pago exitosamente
-                callbackOk(response.data)
-            } else {
-                callbackWrong("Error del servidor")
-            }
-        } catch (error) {
-            callbackWrong(error)
-        }
+        EndPoint.sendGet(url, (responseData: any, response: any) => {
+            callbackOk(responseData, response)
+        }, callbackWrong)
+
     }
 
-    static async updateComercio(data:any, callbackOk:any, callbackWrong:any) {
+    static async updateComercio(data: any, callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase
@@ -110,7 +104,7 @@ class ModelConfig {
         }
     }
 
-    static async getAllImpresion(callbackOk:any, callbackWrong:any) {
+    static async getAllImpresion(callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase
@@ -129,7 +123,7 @@ class ModelConfig {
         }
     }
 
-    static async updateImpresion(data:any, callbackOk:any, callbackWrong:any) {
+    static async updateImpresion(data: any, callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase
@@ -148,7 +142,7 @@ class ModelConfig {
         }
     }
 
-    static async getAllSimpleApi(callbackOk:any, callbackWrong:any) {
+    static async getAllSimpleApi(callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase
@@ -167,7 +161,7 @@ class ModelConfig {
         }
     }
 
-    static async updateSimpleApi(data:any, callbackOk:any, callbackWrong:any) {
+    static async updateSimpleApi(data: any, callbackOk: any, callbackWrong: any) {
         try {
             const configs = ModelConfig.get()
             var url = configs.urlBase

@@ -231,7 +231,7 @@ const EditarProducto = ({
 
   useEffect(() => {
     if (Object.keys(editedProduct).length < 1) return
-    // console.log(editedProduct)
+    console.log(editedProduct)
     if (categories.length < 1) {
       cargarCategorias()
     } else {

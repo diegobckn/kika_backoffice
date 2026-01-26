@@ -146,7 +146,7 @@ const Step3CC = ({
       },
     };
 
-    
+
 
     // console.log("Datos objeto productos", productoNuevo);
     showLoading("Creando producto " + step1Data.nombre)
@@ -240,8 +240,9 @@ const Step3CC = ({
       setEmptyFieldsMessage("Favor completar Stock Inicial.");
       return false;
     }
-    if (isNaN(parseFloat(stockInicial)) || parseFloat(stockInicial) === 0) {
-      setEmptyFieldsMessage("El stock inicial no puede ser cero.");
+    // if (isNaN(parseFloat(stockInicial)) || parseFloat(stockInicial) === 0) {
+    if (isNaN(parseFloat(stockInicial))) {
+      setEmptyFieldsMessage("Favor completar Stock Inicial.");
       return false;
     }
 

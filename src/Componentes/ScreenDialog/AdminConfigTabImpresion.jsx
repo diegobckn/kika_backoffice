@@ -19,10 +19,11 @@ import SmallButton from "../Elements/SmallButton";
 const AdminConfigTabImpresion = ({
   tabNumber,
   setSomeChange,
-  closeModal= ()=>{}
+  closeModal = () => { }
 }) => {
 
   const {
+    showAlert,
     showMessage,
     showLoading,
     hideLoading
@@ -30,6 +31,9 @@ const AdminConfigTabImpresion = ({
 
   const GRUPO = "Ticket"
   const TAB_INDEX = 2
+
+  const [hasResults, setHasResults] = useState(false);
+
 
   var states = {
     RazonSocial: useState(""),
@@ -59,7 +63,7 @@ const AdminConfigTabImpresion = ({
 
   const loadInitialValues = (info) => {
     info.configuracion.forEach((propConfig) => {
-      if( states[propConfig.entrada] != undefined ){
+      if (states[propConfig.entrada] != undefined) {
         states[propConfig.entrada][1](propConfig.valor)
       }
     })
@@ -71,8 +75,10 @@ const AdminConfigTabImpresion = ({
     ModelConfig.getAllImpresion((info) => {
       loadInitialValues(info)
       hideLoading()
+      setHasResults(true)
     }, (err) => {
-      showMessage(err)
+      showAlert("No se pudo obtener la informacion")
+      setHasResults(false)
       hideLoading()
     })
   }
@@ -117,7 +123,7 @@ const AdminConfigTabImpresion = ({
       <Grid item xs={12} lg={12}>
         <Grid container spacing={2}>
 
-          {props.map((name, ix) => (
+          {hasResults && props.map((name, ix) => (
             <TextField
               key={ix}
               margin="normal"
@@ -130,7 +136,11 @@ const AdminConfigTabImpresion = ({
           ))}
 
 
-          <SmallButton textButton="Guardar" actionButton={confirmSave} />
+          <SmallButton
+            textButton="Guardar"
+            actionButton={confirmSave}
+            isDisabled={!hasResults}
+          />
         </Grid>
       </Grid>
 

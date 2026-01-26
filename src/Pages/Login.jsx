@@ -31,6 +31,7 @@ const Login = () => {
       onSuccess={(userOk) => {
         setUserData(userOk);
         User.getInstance().saveInSesion(userOk)
+        ModelConfig.change("idEmpresa", userOk.idEmpresa)
         navigate("/home");
       }}
       openDialog={true}

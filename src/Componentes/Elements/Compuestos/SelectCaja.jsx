@@ -12,12 +12,10 @@ import ModelConfig from "../../../Models/ModelConfig";
 import { Check, Dangerous } from "@mui/icons-material";
 import User from "../../../Models/User";
 import Validator from "../../../Helpers/Validator";
-import axios from "axios";
-import Sucursal from "../../../Models/Sucursal";
 
-
-const SelectSucursal = ({
+export default ({
   inputState,
+  sucursalInfo,
   validationState,
   withLabel = true,
   autoFocus = false,
@@ -25,38 +23,22 @@ const SelectSucursal = ({
   label = fieldName[0].toUpperCase() + fieldName.substr(1),
   labelEmpty = "SELECCIONAR",
   required = false,
-  vars = null,
-  setSucursales = (sucs) => { },
-  setSucursalSelected = (suc) => { },
-  onlyIds = []
+  vars = null
 }) => {
 
   const {
     showMessage
   } = useContext(SelectedOptionsContext);
 
-  const apiUrl = ModelConfig.get().urlBase;
-
   const [selectList, setSelectList] = useState([])
   const [selected, setSelected] = useState(-1)
 
-  const [selectedOriginal, setSelectedOriginalx] = inputState ? inputState : vars ? vars[0][fieldName] : useState("")
+  const [selectedOriginal, setSelectedOriginal] = inputState ? inputState : vars ? vars[0][fieldName] : useState("")
   const [validation, setValidation] = validationState ? validationState : vars ? vars[1][fieldName] : useState(null)
 
-
-  const setSelectedOriginal = (newVal) => {
-    // console.log("cambiando original a", newVal)
-    setSelectedOriginalx(newVal)
-  }
-
   const validate = () => {
-    // console.log("validate de:" + fieldName)
-    // const len = selected.length
-    // console.log("len:", len)
-    // const reqOk = (!required || (required && len > 0))
     const empty = (selected == "" || selected == null || selected == -1)
     const reqOk = !required || (required && !empty)
-
 
     var message = ""
     if (!reqOk) {
@@ -66,7 +48,6 @@ const SelectSucursal = ({
     const vl = {
       "require": !reqOk,
       "empty": empty,
-      "value": selected,
       "allOk": (reqOk),
       "message": message
     }
@@ -79,93 +60,73 @@ const SelectSucursal = ({
     setSelectedOriginal(event.target.value)
   }
 
-  const checkChangeBlur = (event) => {
-
+  const setByString = (valueString) => {
+    var found = -1
+    if (!sucursalInfo) {
+      // console.log("sale por que region es incorrecto")
+      setSelected(-1)
+      return
+    }
+    sucursalInfo.puntoVenta.forEach((sucInfo) => {
+      if (sucInfo.sPuntoVenta == valueString) {
+        found = sucInfo.idCaja
+      }
+    })
+    setSelected(found)
   }
 
   const loadList = async () => {
-    Sucursal.getAll((responseData, response) => {
-      if (onlyIds.length > 0) {
-        var onlys = []
-        responseData.forEach((sucItem) => {
-          if (
-            onlyIds.includes(sucItem.idSucursal)
-            || onlyIds.includes(sucItem.idSucursal + "")
-          ) {
-            onlys.push(sucItem)
-          }
-        })
-        setSelectList(onlys);
-        setSucursales(onlys);
-      } else {
-        setSelectList(responseData);
-        setSucursales(responseData);
-      }
-    }, (error) => {
-      showMessage(error)
-    })
-  }
-
-  const setByString = (valueString) => {
-    // console.log("setByString")
-    selectList.forEach((item) => {
-      if (item.sucursal == valueString) {
-        // console.log("asignando",item.idSucursal)
-        setSelected(item.idSucursal)
-        setSelectedOriginal(item.idSucursal)
-      }
-    })
-  }
-
-  const buscarInfoById = (sucursalId) => {
-    var found = null;
-    selectList.forEach((sucItem) => {
-      if (sucItem.idSucursal == sucursalId) {
-        found = sucItem
-      }
-    })
-
-    return found
+    if (!sucursalInfo) {
+      // console.log("sale por que region es incorrecto")
+      setSelected(-1)
+      return
+    }
+    // console.log("loadList comuna")
+    setSelectList(sucursalInfo.puntoVenta)
   }
 
   useEffect(() => {
+    // console.log("")
+
     validate()
     setSelected(-1)
-    setSucursalSelected(null)
-    loadList()
+    // console.log(inputRegionState)
+    // console.log("carga inicial comuna")
   }, [])
 
   useEffect(() => {
-    // console.log("cambio algo")
+    // console.log("")
+    // console.log("selectedregion es:", (selectedRegion + ""))
+    if (sucursalInfo) {
+      setSelected(-1)
+      setSelectList([])
+      loadList()
+    }
+  }, [sucursalInfo])
+
+
+  useEffect(() => {
+    // console.log("")
+    // console.log("cambio algo en comuna")
+    if (!sucursalInfo) return
+    if (selected === -1 && selectList.length === 0) {
+      // console.log("debe cargar")
+      loadList()
+    }
     if (selectList.length > 0 && selectedOriginal !== "" && selected === -1) {
-      // console.log("carga el original", selectedOriginal)
       if (Validator.isNumeric(selectedOriginal)) {
         // console.log("todo numero..")
         setSelected(selectedOriginal)
       } else {
         // console.log("no es todo numero..")
+        // console.log("carga original",selectedOriginal)
         setByString(selectedOriginal)
       }
-      validate()
     } else {
-      // console.log("valida normal")
       validate()
     }
     // console.log("selected es:", selected)
-
-    if (selected == -1) {
-      setSucursalSelected(null)
-    } else {
-      setSucursalSelected(buscarInfoById(selected))
-    }
-
   }, [selected, selectList.length])
-
-  useEffect(() => {
-    loadList()
-  }, [onlyIds.length])
-
-
 
   return (
     <>
@@ -198,14 +159,12 @@ const SelectSucursal = ({
         {selectList.map((selectOption, ix) => (
           <MenuItem
             key={ix}
-            value={selectOption.idSucursal}
+            value={selectOption.idCaja}
           >
-            {selectOption.descripcionSucursal}
+            {selectOption.sPuntoVenta}
           </MenuItem>
         ))}
       </TextField>
     </>
   );
 };
-
-export default SelectSucursal;

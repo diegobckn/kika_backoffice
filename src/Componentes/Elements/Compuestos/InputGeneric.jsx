@@ -25,7 +25,8 @@ const InputGeneric = ({
   maxLength = 20,
   required = false,
   vars = null,
-  onEnter = () => { }
+  onEnter = () => { },
+  readonly = false
 }) => {
 
   const {
@@ -77,7 +78,7 @@ const InputGeneric = ({
       setKeyPressed(true)
       return
     }
-    if (!canAutoComplete && event.key == "Unidentified") {
+    if (readonly || !canAutoComplete && event.key == "Unidentified") {
       event.preventDefault();
       return false
     } else {
@@ -90,7 +91,7 @@ const InputGeneric = ({
   }
 
   const checkChange = (event) => {
-    if (!canAutoComplete && !keyPressed) {
+    if (readonly || !canAutoComplete && !keyPressed) {
       return
     }
     const value = event.target.value

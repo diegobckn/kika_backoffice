@@ -32,6 +32,8 @@ import ModelConfig from "../../Models/ModelConfig";
 
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import Product from "../../Models/Product";
+import ProductSold from "../../Models/ProductSold";
+import System from "../../Helpers/System";
 
 const SearchListProductItem = ({
   product,
@@ -39,8 +41,6 @@ const SearchListProductItem = ({
   onEditClick,
   onDeleteClick
 }) => {
-
-  const apiUrl = ModelConfig.get().urlBase;
 
   const [image, setImage] = useState("")
 
@@ -98,9 +98,9 @@ const SearchListProductItem = ({
       </TableCell>
       <TableCell>
         <span style={{ color: "purple" }}>Precio Costo: </span>
-        {product.precioCosto} <br />
+        ${System.formatMonedaLocal(product.precioCosto, false)} <br />
         <span style={{ color: "purple" }}>Precio Venta: </span>
-        {product.precioVenta} <br />
+        ${System.formatMonedaLocal(ProductSold.createByValues(product).getPrecioCantidad(1), false)}<br />
       </TableCell>
       <TableCell>
         <span style={{ color: "purple" }}>Stock Inicial: </span>

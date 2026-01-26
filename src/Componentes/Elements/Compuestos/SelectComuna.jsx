@@ -156,7 +156,8 @@ const SelectComuna = ({
       )}
 
 
-      <Select
+      <TextField
+        select
         sx={{
           marginTop: "17px"
         }}
@@ -182,7 +183,7 @@ const SelectComuna = ({
             {selectOption.comunaNombre}
           </MenuItem>
         ))}
-      </Select>
+      </TextField>
     </>
   );
 };

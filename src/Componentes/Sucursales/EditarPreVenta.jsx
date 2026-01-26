@@ -134,7 +134,7 @@ export default function EditarPreVenta({
 
 
 
-        if(data.puntoVentaConfiguracions.length>0){
+        if(data.puntoVentaConfiguracions && data.puntoVentaConfiguracions.length>0){
           data.puntoVentaConfiguracions.forEach((cfg,ix)=>{
             if(cfg.entrada == "cliente_id"){
               states.cliente_id[1](cfg.valor)

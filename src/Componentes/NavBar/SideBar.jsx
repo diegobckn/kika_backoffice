@@ -25,7 +25,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { Button, IconButton, Typography } from "@mui/material";
-import { Settings } from "@mui/icons-material";
+import { LocalDrink, Settings } from "@mui/icons-material";
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import ListAltIcon from '@mui/icons-material/ListAlt';
@@ -34,6 +34,9 @@ import ImportExportIcon from '@mui/icons-material/ImportExport';
 import ScreenDialogConfig from "../ScreenDialog/AdminConfig";
 import CONSTANTS from "../../definitions/Constants";
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+
+import LocalOfferIcon from '@mui/icons-material/LocalOffer'; // Icono para Ofertas
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import CloseSession from '../ScreenDialog/CloseSession'
@@ -121,12 +124,30 @@ export default function PermanentDrawerLeft() {
           ],
         },
         {
+          text: "Envases",
+          link: "/envases",
+          icon: <LocalDrink />,
+          // subMenuItems: [
+          //   { text: "Entrada y Salida de Stock ", link: "/stock/entradasalidastock",icon: <ImportExportIcon/>},
+          // ]
+
+        },
+        {
           text: "Stock",
           link: "/stock",
           icon: <ListAltIcon />,
           // subMenuItems: [
           //   { text: "Entrada y Salida de Stock ", link: "/stock/entradasalidastock",icon: <ImportExportIcon/>},
           // ]
+
+        },
+
+        { text: "Descuentos", link: "/descuentos", icon: <PriceCheckIcon /> },
+
+        {
+          text: "Ofertas",
+          link: "/ofertas",
+          icon: <LocalOfferIcon />,
 
         },
 

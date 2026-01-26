@@ -20,10 +20,11 @@ import InputFile from "../Elements/Compuestos/InputFile";
 const AdminConfigTabSimpleApi = ({
   tabNumber,
   setSomeChange,
-  closeModal= ()=>{}
+  closeModal = () => { }
 }) => {
 
   const {
+    showAlert,
     showMessage,
     showLoading,
     hideLoading
@@ -31,6 +32,10 @@ const AdminConfigTabSimpleApi = ({
 
   const GRUPO = "SimpleAPI"
   const TAB_INDEX = 3
+  const [hasResults, setHasResults] = useState(false);
+  const stateCertidicado = useState("")
+  const stateValidationCertidicado = useState("")
+
 
   var states = {
     FirmaPath: useState(""),
@@ -45,8 +50,6 @@ const AdminConfigTabSimpleApi = ({
     PDFPath: useState(""),
   };
 
-  const stateCertidicado = useState("")
-  const stateValidationCertidicado = useState("")
 
   const [props, setProps] = useState([]);
 
@@ -57,7 +60,7 @@ const AdminConfigTabSimpleApi = ({
 
   const loadInitialValues = (info) => {
     info.configuracion.forEach((propConfig) => {
-      if( states[propConfig.entrada] != undefined ){
+      if (states[propConfig.entrada] != undefined) {
         states[propConfig.entrada][1](propConfig.valor)
       }
     })
@@ -69,8 +72,10 @@ const AdminConfigTabSimpleApi = ({
     ModelConfig.getAllSimpleApi((info) => {
       loadInitialValues(info)
       hideLoading()
+      setHasResults(true)
     }, (err) => {
-      showMessage(err)
+      showAlert("No se pudo obtener la informacion")
+      setHasResults(false)
       hideLoading()
     })
   }
@@ -89,10 +94,10 @@ const AdminConfigTabSimpleApi = ({
 
     //agregamos el control especial para manejo del archivo del certificado
     const newItem = {}
-      newItem.grupo = GRUPO
-      newItem.entrada = "nuevoCertificado"
-      newItem.valor = stateCertidicado[0]
-      data.push(newItem)
+    newItem.grupo = GRUPO
+    newItem.entrada = "nuevoCertificado"
+    newItem.valor = stateCertidicado[0]
+    data.push(newItem)
 
     console.log("para enviar", data)
 
@@ -125,9 +130,9 @@ const AdminConfigTabSimpleApi = ({
       <Grid item xs={12} lg={12}>
         <Grid container spacing={2}>
 
-          {props.map((name, ix) => {
+          {hasResults && props.map((name, ix) => {
             if (name == "Certificado") return (
-              <div key={ix} style={{ width:"100%" }}>
+              <div key={ix} style={{ width: "100%" }}>
                 <TextField
                   key={ix}
                   margin="normal"
@@ -162,7 +167,11 @@ const AdminConfigTabSimpleApi = ({
           })}
 
 
-          <SmallButton textButton="Guardar" actionButton={confirmSave} />
+          <SmallButton
+            textButton="Guardar"
+            actionButton={confirmSave}
+            isDisabled={!hasResults}
+          />
         </Grid>
       </Grid>
 

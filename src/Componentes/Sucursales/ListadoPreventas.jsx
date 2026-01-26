@@ -107,7 +107,7 @@ const ListadoPreventas = () => {
                   <TableCell>{preventa.idCaja}</TableCell>
                   <TableCell>{preventa.sPuntoVenta}</TableCell>
                   <TableCell>{preventa.sucursal}</TableCell>
-                  <TableCell>{preventa.puntoVentaConfiguracions.length}</TableCell>
+                  <TableCell>{preventa.puntoVentaConfiguracions ? preventa.puntoVentaConfiguracions.length : ""}</TableCell>
                   <TableCell>
                     <IconButton onClick={() => {
                       setPreventaSelect(preventa)

@@ -4,27 +4,28 @@ import axios from "axios";
 import Model from './Model.ts';
 import { useState } from 'react';
 import ModelConfig from './ModelConfig.ts';
+import EndPoint from './EndPoint.ts';
 
 
 class Client extends Model {
-  id: number;
-  codigoCliente: number;
-  rut: string;
-  nombre: string;
-  apellido: string;
-  direccion: string;
-  telefono: string;
-  region: string;
-  comuna: string;
-  correo: string;
-  giro: string;
-  urlPagina: string;
-  clienteSucursal: number;
-  formaPago: string;
-  usaCuentaCorriente: number;
-  fechaIngreso: string;
-  fechaUltAct: string;
-  bajaLogica: boolean;
+  id: number | undefined;
+  codigoCliente: number | undefined;
+  rut: string | undefined;
+  nombre: string | undefined;
+  apellido: string | undefined;
+  direccion: string | undefined;
+  telefono: string | undefined;
+  region: string | undefined;
+  comuna: string | undefined;
+  correo: string | undefined;
+  giro: string | undefined;
+  urlPagina: string | undefined;
+  clienteSucursal: number | undefined;
+  formaPago: string | undefined;
+  usaCuentaCorriente: number | undefined;
+  fechaIngreso: string | undefined;
+  fechaUltAct: string | undefined;
+  bajaLogica: boolean | undefined;
 
   codigoClienteSucursal: number | null | undefined
   data: any
@@ -41,7 +42,7 @@ class Client extends Model {
     return Client.instance;
   }
 
-  saveInSesion(data) {
+  saveInSesion(data: any) {
     this.sesion.guardar(data)
     // localStorage.setItem('userData', JSON.stringify(data));
     return data;
@@ -54,9 +55,10 @@ class Client extends Model {
   }
 
   fill(values: any) {
+    var me: any = this
     for (var campo in values) {
       const valor = values[campo]
-      this[campo] = valor;
+      me[campo] = valor;
     }
   }
 
@@ -72,7 +74,7 @@ class Client extends Model {
     return values
   }
 
-  async searchInServer(searchText, callbackOk, callbackWrong) {
+  async searchInServer(searchText: string, callbackOk: any, callbackWrong: any) {
     try {
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -92,7 +94,7 @@ class Client extends Model {
     }
   }
 
-  async getAllFromServer(callbackOk, callbackWrong) {
+  async getAllFromServer(callbackOk: any, callbackWrong: any) {
     try {
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -114,10 +116,10 @@ class Client extends Model {
     }
   }
 
-  async findById(id, callbackOk, callbackWrong) {
-    this.getAllFromServer((clientes) => {
+  async findById(id: number, callbackOk: any, callbackWrong: any) {
+    this.getAllFromServer((clientes: any) => {
       var clienteEncontrado = null
-      clientes.forEach((cl) => {
+      clientes.forEach((cl: any) => {
         if (cl.codigoCliente == id) {
           clienteEncontrado = cl
           return
@@ -133,7 +135,7 @@ class Client extends Model {
     }, callbackWrong)
   }
 
-  async getDeudasByMyId(callbackOk, callbackWrong) {
+  async getDeudasByMyId(callbackOk: any, callbackWrong: any) {
     if (!this.id) {
       console.log("Client. getDeudasByMyId. No se asigno un id para buscar deudas del cliente");
       return
@@ -166,7 +168,18 @@ class Client extends Model {
     }
   }
 
-  async pagarFiado(callbackOk, callbackWrong) {
+  async getDeudasByFecha(fechadesde: string, fechahasta: string, callbackOk: any, callbackWrong: any) {
+    var url = ModelConfig.get("urlBase")
+      + "/ReporteClientes/GetClientesDeudasByFecha"
+      + "?fechaDesde=" + fechadesde
+      + "&fechaHasta=" + fechahasta
+
+    EndPoint.sendGet(url, (responseData:any, response:any) => {
+      callbackOk(responseData, response)
+    }, callbackWrong)
+  }
+
+  async pagarFiado(callbackOk: any, callbackWrong: any) {
     if (!this.data) {
       console.log("falta asignar la data para enviar")
       return
@@ -202,7 +215,7 @@ class Client extends Model {
     }
   }
 
-  async getLastSale(callbackOk, callbackWrong) {
+  async getLastSale(callbackOk: any, callbackWrong: any) {
     if (!this.codigoClienteSucursal && this.clienteSucursal)
       this.codigoClienteSucursal = this.clienteSucursal
     if (
@@ -244,7 +257,7 @@ class Client extends Model {
     }
   }
 
-  async getRegions(callbackOk, callbackWrong) {
+  async getRegions(callbackOk: any, callbackWrong: any) {
     try {
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -266,7 +279,7 @@ class Client extends Model {
   };
 
 
-  async getComunasFromRegion(regionId, callbackOk, callbackWrong) {
+  async getComunasFromRegion(regionId: number, callbackOk: any, callbackWrong: any) {
     try {
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -287,9 +300,12 @@ class Client extends Model {
   }
 
 
-  async create(data, callbackOk, callbackWrong) {
+  async create(data: any, callbackOk: any, callbackWrong: any) {
     try {
       data.usaCuentaCorriente = 0
+
+      data.comuna = data.comuna + ""
+      data.region = data.region + ""
 
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -305,7 +321,7 @@ class Client extends Model {
       } else {
         callbackWrong("Error de servidor")
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         callbackWrong(error.message);
       } else if (error.response && error.response.status === 500) {
@@ -318,8 +334,8 @@ class Client extends Model {
       // console.error(error);
     }
   };
-  
-  async edit(data:any, callbackOk:any, callbackWrong:any) {
+
+  async edit(data: any, callbackOk: any, callbackWrong: any) {
     try {
       data.usaCuentaCorriente = 0
 
@@ -337,7 +353,7 @@ class Client extends Model {
       } else {
         callbackWrong("Error de servidor")
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         callbackWrong(error.message);
       } else if (error.response && error.response.status === 500) {
@@ -351,7 +367,7 @@ class Client extends Model {
     }
   };
 
-  async existRut(rut, callbackOk, callbackWrong) {
+  async existRut(rut: string, callbackOk: any, callbackWrong: any) {
     try {
       const configs = ModelConfig.get()
       var url = configs.urlBase
@@ -373,7 +389,7 @@ class Client extends Model {
     }
   };
 
-  static completoParaFactura(info) {
+  static completoParaFactura(info: any) {
     // console.log("revisando si esta para facturar")
     // console.log(info)
     return (

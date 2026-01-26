@@ -19,10 +19,11 @@ import SmallButton from "../Elements/SmallButton";
 const AdminConfigTabComercio = ({
   tabNumber,
   setSomeChange,
-  closeModal= ()=>{}
+  closeModal = () => { }
 }) => {
 
   const {
+    showAlert,
     showMessage,
     showLoading,
     hideLoading
@@ -31,6 +32,8 @@ const AdminConfigTabComercio = ({
   const GRUPO = "ImpresionTicket"
   const TAB_INDEX = 1
 
+  const [props, setProps] = useState([]);
+  const [hasResults, setHasResults] = useState(false);
 
   var states = {
     Nom_RazonSocial: useState(""),
@@ -39,8 +42,6 @@ const AdminConfigTabComercio = ({
     Nom_Giro: useState("")
   };
 
-  const [props, setProps] = useState([]);
-
   const changeState = (name, value) => {
     setSomeChange(true)
     states[name][1](value)
@@ -48,7 +49,7 @@ const AdminConfigTabComercio = ({
 
   const loadInitialValues = (info) => {
     info.configuracion.forEach((propConfig) => {
-      if( states[propConfig.entrada] != undefined ){
+      if (states[propConfig.entrada] != undefined) {
         states[propConfig.entrada][1](propConfig.valor)
       }
     })
@@ -59,8 +60,10 @@ const AdminConfigTabComercio = ({
     ModelConfig.getAllComercio((info) => {
       loadInitialValues(info)
       hideLoading()
+      setHasResults(true)
     }, (err) => {
-      showMessage(err)
+      showAlert("No se pudo obtener la informacion")
+      setHasResults(false)
       hideLoading()
     })
   }
@@ -107,7 +110,7 @@ const AdminConfigTabComercio = ({
         <Grid container spacing={2}>
 
 
-          {props.map((name, ix) => (
+          {hasResults && props.map((name, ix) => (
             <TextField
               key={ix}
               margin="normal"
@@ -119,7 +122,11 @@ const AdminConfigTabComercio = ({
             />
           ))}
 
-          <SmallButton textButton="Guardar" actionButton={confirmSave} />
+          <SmallButton
+            textButton="Guardar"
+            actionButton={confirmSave}
+            isDisabled={!hasResults}
+          />
         </Grid>
       </Grid>
 

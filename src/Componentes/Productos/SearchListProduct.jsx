@@ -282,98 +282,109 @@ const SearchListProducts = ({
 
   return (
     <Box sx={{ p: 2, mb: 4 }}>
-      <div style={{ p: 2, mt: 4 }} role="tabpanel">
+      <div 
+      // style={{ p: 2, mt: 4 }} 
+      // role="tabpanel"
+      >
 
-        <TextField
-          sx={{
-            marginTop: "30px",
-            width: "300px",
-          }}
-          margin="dense"
-          label="Buscar productos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={(e) => {
-            checkEnterSearch(e)
-          }}
-        />
+        <Grid container spacing={1}>
 
-        <SelectSucursal
-          styles={{
-            marginTop: "30px",
-            marginLeft: "10px",
-            width: "250px",
-          }}
-          inputState={[sucursal, setSucursal]}
-          validationState={[sucursalVal, setSucursalval]}
-          withLabel={false}
-          label={"Sucursal"}
-        />
+          <Grid item xs={12} sm={6} md={5} lg={5}>
+            <TextField
+              sx={{
+                marginTop: "18px",
+                width: "100%",
+              }}
+              margin="dense"
+              label="Buscar productos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                checkEnterSearch(e)
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <SelectSucursal
+              inputState={[sucursal, setSucursal]}
+              validationState={[sucursalVal, setSucursalval]}
+              withLabel={false}
+              label={"Sucursal"}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={4}>
+            <Button sx={{
+              marginTop: "18px",
+              // marginLeft: "10px",
+              height: "55px !important",
+              width: "100%",
+              color: "white",
+              backgroundColor: "midnightblue",
+              "&:hover": {
+                backgroundColor: "#1c1b17 ",
+                color: "white",
+              },
+            }}
+              onClick={() => {
+                setCurrentPage(1)
+                doSearch()
+              }}
+            >Buscar</Button>
+          </Grid>
 
-        <Button sx={{
-          marginTop: "30px",
-          marginLeft: "10px",
-          height: "55px !important",
-          width: "150px",
-          color: "white",
-          backgroundColor: "midnightblue",
-          "&:hover": {
-            backgroundColor: "#1c1b17 ",
-            color: "white",
-          },
-        }}
-          onClick={() => {
-            setCurrentPage(1)
-            doSearch()
-          }}
-        >Buscar</Button>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID Productos </TableCell>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Mercado Lógico</TableCell>
-              <TableCell>Precios </TableCell>
-              <TableCell>Stock</TableCell>
-              <TableCell>Impuestos</TableCell>
-              <TableCell>Bodega</TableCell>
-              <TableCell>Proveedor</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {!hasResult ? (
-              <TableRow>
-                <TableCell colSpan={2}>No se encontraron productos</TableCell>
-              </TableRow>
-            ) : (
-              pageProduct.map((product, index) => {
-                // console.log("key:" + product.idProducto 
-                //   + "////nombre: " + product.nombre
-                //   + "////count: " + pageProduct.length
-                // )
-                return (
-                  <SearchListProductItem
-                    product={product}
-                    key={index}
-                    index={index}
-                    onEditClick={(p) => handleEdit(p)}
-                    onDeleteClick={(p) => handleOpenDialog(p)}
-                  />
-                )
-              }
-              )
-            )}
-          </TableBody>
-        </Table>
+
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID Productos </TableCell>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell>Mercado Lógico</TableCell>
+                  <TableCell>Precios </TableCell>
+                  <TableCell>Stock</TableCell>
+                  <TableCell>Impuestos</TableCell>
+                  <TableCell>Bodega</TableCell>
+                  <TableCell>Proveedor</TableCell>
+                  <TableCell>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {!hasResult ? (
+                  <TableRow>
+                    <TableCell colSpan={2}>No se encontraron productos</TableCell>
+                  </TableRow>
+                ) : (
+                  pageProduct.map((product, index) => {
+                    // console.log("key:" + product.idProducto 
+                    //   + "////nombre: " + product.nombre
+                    //   + "////count: " + pageProduct.length
+                    // )
+                    return (
+                      <SearchListProductItem
+                        product={product}
+                        key={index}
+                        index={index}
+                        onEditClick={(p) => handleEdit(p)}
+                        onDeleteClick={(p) => handleOpenDialog(p)}
+                      />
+                    )
+                  }
+                  )
+                )}
+              </TableBody>
+            </Table>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              showFirstButton
+              showLastButton
+            />
+          </Grid>
+
+
+        </Grid>
       </div>
-      <Pagination
-        count={totalPages}
-        page={currentPage}
-        onChange={handlePageChange}
-        showFirstButton
-        showLastButton
-      />
 
       {
         openEditModal && selectedProduct && (
