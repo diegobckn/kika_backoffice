@@ -394,38 +394,38 @@
 //   };
 
 //   /** * Elimina una oferta (baja lógica) */
-//   const handleDelete = (oferta) => {
-//     if (!oferta || !oferta.codigoOferta) {
-//       showMessage("Error: No se pudo identificar la oferta a eliminar");
-//       console.error("Oferta inválida:", oferta);
-//       return;
-//     }
-//     const mensajeConfirmacion = `¿Está seguro de eliminar la oferta "${oferta.descripcion}"?\nCódigo: ${oferta.codigoOferta}`;
-//     showConfirm(
-//       mensajeConfirmacion,
-//       () => {
-//         showLoading();
-//         Ofertas.deleteOferta(
-//           oferta.codigoOferta,
-//           (data, response) => {
-//             hideLoading();
-//             showMessage("Oferta eliminada exitosamente");
-//             setRefresh(!refresh);
-//           },
-//           (error) => {
-//             hideLoading();
-//             console.error("Error al eliminar oferta:", error);
-//             const mensajeError =
-//               error?.message || error?.descripcion || "Error desconocido";
-//             showMessage(`Error al eliminar la oferta: ${mensajeError}`);
-//           }
-//         );
-//       },
-//       () => {
-//         console.log("Eliminación cancelada por el usuario");
-//       }
-//     );
-//   };
+  const handleDelete = (oferta) => {
+    if (!oferta || !oferta.codigoOferta) {
+      showMessage("Error: No se pudo identificar la oferta a eliminar");
+      console.error("Oferta inválida:", oferta);
+      return;
+    }
+    const mensajeConfirmacion = `¿Está seguro de eliminar la oferta "${oferta.descripcion}"?\nCódigo: ${oferta.codigoOferta}`;
+    showConfirm(
+      mensajeConfirmacion,
+      () => {
+        showLoading();
+        Ofertas.deleteOferta(
+          oferta.codigoOferta,
+          (data, response) => {
+            hideLoading();
+            showMessage("Oferta eliminada exitosamente");
+            setRefresh(!refresh);
+          },
+          (error) => {
+            hideLoading();
+            console.error("Error al eliminar oferta:", error);
+            const mensajeError =
+              error?.message || error?.descripcion || "Error desconocido";
+            showMessage(`Error al eliminar la oferta: ${mensajeError}`);
+          }
+        );
+      },
+      () => {
+        console.log("Eliminación cancelada por el usuario");
+      }
+    );
+  };
 
 //   // Formateo moneda simple (sin decimales)
 //   const formatCLP = (n) => {
